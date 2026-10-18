@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The first thing the card still lacks, at the top of its form. -->
+    <record id="crm_lead_view_form_twp_requirements" model="ir.ui.view">
+        <field name="name">crm.lead.form.twp.requirements</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0 text-center" role="alert" invisible="not twp_needs_attention">
+                    <field name="twp_needs_attention" readonly="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- And on its card on the board. -->
+    <record id="crm_lead_view_kanban_twp_requirements" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.twp.requirements</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='card']/field[@name='name']" position="after">
+                <field name="twp_needs_attention" class="small text-danger" invisible="not twp_needs_attention"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_list_twp_requirements" model="ir.ui.view">
+        <field name="name">crm.lead.list.twp.requirements</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="twp_needs_attention" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

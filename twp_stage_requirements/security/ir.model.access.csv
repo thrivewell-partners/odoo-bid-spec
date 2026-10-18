@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_twp_stage_requirement_user,twp.stage.requirement user,model_twp_stage_requirement,base.group_user,1,0,0,0
+access_twp_stage_requirement_manager,twp.stage.requirement manager,model_twp_stage_requirement,sales_team.group_sale_manager,1,1,1,1

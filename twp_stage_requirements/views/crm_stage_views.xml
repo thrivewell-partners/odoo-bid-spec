@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_stage_form_twp_requirements" model="ir.ui.view">
+        <field name="name">crm.stage.form.twp.requirements</field>
+        <field name="model">crm.stage</field>
+        <field name="inherit_id" ref="crm.crm_stage_form"/>
+        <field name="arch" type="xml">
+            <field name="requirements" position="after">
+                <separator string="What a card needs here"/>
+                <field name="twp_requirement_ids" nolabel="1">
+                    <list editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="field_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="message" placeholder="e.g. Heat loss not entered"/>
+                    </list>
+                </field>
+                <group>
+                    <field name="twp_stamp_field_id" options="{'no_create': True, 'no_open': True}"/>
+                </group>
+            </field>
+        </field>
+    </record>
+</odoo>
