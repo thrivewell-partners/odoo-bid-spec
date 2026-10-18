@@ -59,9 +59,9 @@ class TwpBidSpecAward(models.TransientModel):
             lead._twp_bs_move_to("awarded")
         # After the stage: a bid only reads as won or lost once its project is Awarded.
         self._twp_bs_after_award()
+        unknown = _("equipment not known")
         lines = Markup("").join(
-            Markup("<li>%s: %s</li>") % (
-                line.job_id.product_line_id.name, line.installed_partner_id.name or _("equipment not known"))
+            Markup("<li>%s: %s</li>") % (line.job_id.product_line_id.name, line.installed_partner_id.name or unknown)
             for line in self.line_ids)
         lead.message_post(body=Markup("%s<ul>%s</ul>") % (_("Awarded to %s.", self._twp_bs_winner_label()), lines))
         return {"type": "ir.actions.act_window_close"}
