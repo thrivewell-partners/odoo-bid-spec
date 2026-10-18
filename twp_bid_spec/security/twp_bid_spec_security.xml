@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Turned on in Settings > CRM > Bid / Spec. Until then CRM looks as it does without the module. -->
+    <record id="group_twp_bid_spec" model="res.groups">
+        <field name="name">Show Bid / Spec</field>
+    </record>
+</odoo>

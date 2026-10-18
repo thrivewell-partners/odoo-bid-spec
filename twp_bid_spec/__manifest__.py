@@ -7,14 +7,15 @@ ticked Bid / Spec, an opportunity is a project: a job for each product line, eac
 bid on each job, and the result of every bid once the project is awarded. Review pursues or
 passes a project, Log bid and Log a touch book the follow-ups, Award names the winner and whose
 equipment went in. A follow-up queue, a dashboard for any window, and contractor and engineer
-scorecards. Configured in Settings > CRM > Bid / Spec.
+scorecards. Off until it is turned on in Settings > CRM > Bid / Spec.
 """,
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "category": "Sales/CRM",
     "license": "LGPL-3",
     "author": "ThriveWell Partners",
     "depends": ["twp_stage_requirements", "contacts", "utm", "mail"],
     "data": [
+        "security/twp_bid_spec_security.xml",
         "security/ir.model.access.csv",
         "data/twp_bid_spec_data.xml",
         "data/ir_cron_data.xml",

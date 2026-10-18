@@ -181,8 +181,8 @@ class CrmLead(models.Model):
         """The board of every Bid / Spec pipeline. New cards go to the first one."""
         teams = self.env["crm.team"].search([("twp_bs_enabled", "=", True)])
         if not teams:
-            raise UserError(_("No pipeline is set up for Bid / Spec yet. Create one in Settings > CRM > Bid / Spec, "
-                              "or tick Bid / Spec on a sales team."))
+            # Nothing to show yet: open the settings where a pipeline is made.
+            return self.env["ir.actions.actions"]._for_xml_id("crm.crm_config_settings_action")
         action = self.env["ir.actions.actions"]._for_xml_id("crm.crm_lead_action_pipeline")
         action.update({
             "name": _("Bid / Spec"),

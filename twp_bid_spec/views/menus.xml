@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 Stock CRM opens one pipeline per user, the team they belong to. The Pipelines menu reaches the
-Bid / Spec board directly; a client's other pipelines can be added beside it.
+Bid / Spec board directly; a client's other pipelines can be added beside it. It sits after Sales,
+because CRM opens on its first menu, and every menu here waits for Bid / Spec to be turned on.
 -->
 <odoo>
-    <menuitem id="menu_pipelines" name="Pipelines" parent="crm.crm_menu_root" sequence="0"/>
+    <menuitem id="menu_pipelines" name="Pipelines" parent="crm.crm_menu_root" sequence="2"
+              groups="group_twp_bid_spec"/>
     <menuitem id="menu_pipeline_bid_spec" name="Bid / Spec" parent="menu_pipelines"
               action="action_twp_bs_pipeline" sequence="1"/>
 
     <!-- Jobs and bids across every project, for finding and reporting. -->
-    <menuitem id="menu_bids" name="Bids" parent="crm.crm_menu_root" sequence="2"/>
+    <menuitem id="menu_bids" name="Bids" parent="crm.crm_menu_root" sequence="3" groups="group_twp_bid_spec"/>
     <menuitem id="menu_bid_followups" parent="menu_bids" action="action_twp_bs_followup" sequence="0"/>
     <menuitem id="menu_bid_jobs" parent="menu_bids" action="action_twp_bs_job" sequence="1"/>
     <menuitem id="menu_bid_quotes" name="Contractor bids" parent="menu_bids" action="action_twp_bs_quote" sequence="2"/>
 
-    <menuitem id="menu_report_bid" name="Bid / Spec" parent="crm.crm_menu_report" sequence="0"/>
+    <menuitem id="menu_report_bid" name="Bid / Spec" parent="crm.crm_menu_report" sequence="0"
+              groups="group_twp_bid_spec"/>
     <menuitem id="menu_report_dashboard" parent="menu_report_bid" action="action_twp_bs_dashboard" sequence="1"/>
     <menuitem id="menu_report_jobs" parent="menu_report_bid" action="action_twp_bs_job_analysis" sequence="2"/>
     <menuitem id="menu_report_quotes" parent="menu_report_bid" action="action_twp_bs_quote_analysis" sequence="3"/>
     <menuitem id="menu_report_contractors" parent="menu_report_bid" action="action_twp_bs_contractor_scorecard" sequence="4"/>
     <menuitem id="menu_report_engineers" parent="menu_report_bid" action="action_twp_bs_engineer_scorecard" sequence="5"/>
 
-    <menuitem id="menu_config_bid" name="Bid / Spec" parent="crm.crm_menu_config" sequence="50"/>
+    <menuitem id="menu_config_bid" name="Bid / Spec" parent="crm.crm_menu_config" sequence="50"
+              groups="group_twp_bid_spec"/>
     <menuitem id="menu_config_product_lines" parent="menu_config_bid" action="action_twp_bs_product_line" sequence="1"/>
     <menuitem id="menu_config_project_types" parent="menu_config_bid" action="action_twp_bs_project_type" sequence="2"/>
     <menuitem id="menu_config_partner_roles" parent="menu_config_bid" action="action_twp_bs_partner_role" sequence="3"/>

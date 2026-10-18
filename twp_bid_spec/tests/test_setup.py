@@ -42,8 +42,30 @@ class TestSetup(TwpBidSpecCase):
         lead = self.env["crm.lead"].create({"name": "TWP Plain", "type": "opportunity", "team_id": other.id})
         self.assertFalse(lead.twp_bs_bid_date)
 
+    def test_off_until_turned_on(self):
+        # Installed, the module changes nothing a user sees: CRM opens on its own first menu.
+        group = self.env.ref("twp_bid_spec.group_twp_bid_spec")
+        self.assertNotIn(group, self.env.ref("base.group_user").implied_ids)
+        for xmlid in ("menu_pipelines", "menu_bids", "menu_report_bid", "menu_config_bid"):
+            self.assertEqual(self.env.ref("twp_bid_spec." + xmlid).group_ids, group, xmlid)
+        first = self.env.ref("crm.crm_menu_root").child_id.sorted(lambda menu: (menu.sequence, menu.id))[:1]
+        self.assertEqual(first, self.env.ref("crm.crm_menu_sales"))
+
+    def test_turned_on_in_settings(self):
+        self.env["res.config.settings"].create({"group_twp_bid_spec": True}).execute()
+        group = self.env.ref("twp_bid_spec.group_twp_bid_spec")
+        self.assertIn(group, self.env.ref("base.group_user").implied_ids)
+        self.assertTrue(self.env.user.has_group("twp_bid_spec.group_twp_bid_spec"))
+
+    def test_pipeline_menu_without_a_pipeline_opens_settings(self):
+        self.env["crm.team"].search([("twp_bs_enabled", "=", True)]).twp_bs_enabled = False
+        action = self.env["crm.lead"].action_twp_bs_pipeline()
+        self.assertEqual(action["res_model"], "res.config.settings")
+
     def test_create_pipeline_from_settings(self):
-        self.env["res.config.settings"].create({}).action_twp_bs_create_pipeline()
+        self.env["res.config.settings"].create({"group_twp_bid_spec": True}).action_twp_bs_create_pipeline()
+        self.assertTrue(self.env.user.has_group("twp_bid_spec.group_twp_bid_spec"),
+                        "Creating the pipeline saves the switch beside it")
         team = self.env["crm.team"].search([("twp_bs_enabled", "=", True)], order="id desc", limit=1)
         self.assertNotEqual(team, self.team)
         self.assertTrue(team.twp_bs_enabled)

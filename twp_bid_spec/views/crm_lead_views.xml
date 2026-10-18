@@ -110,6 +110,7 @@
         <field name="name">crm.lead.kanban.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='card']/field[@name='name']" position="after">
                 <div class="d-flex flex-wrap align-items-center gap-1 small" name="twp_bs_card"
@@ -125,6 +126,7 @@
         <field name="name">crm.lead.list.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="twp_bs_bid_date" optional="show"/>
@@ -140,6 +142,7 @@
         <field name="name">crm.lead.search.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="twp_bs_engineer_id"/>

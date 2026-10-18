@@ -4,6 +4,7 @@ from odoo import Command, _, fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
+    group_twp_bid_spec = fields.Boolean("Bid / Spec", implied_group="twp_bid_spec.group_twp_bid_spec")
     twp_bs_team_ids = fields.Many2many(
         "crm.team", string="Bid / Spec pipelines", compute="_compute_twp_bs_team_ids")
     twp_bs_bid_date_required = fields.Boolean(related="company_id.twp_bs_bid_date_required", readonly=False)
@@ -20,6 +21,8 @@ class ResConfigSettings(models.TransientModel):
 
     def action_twp_bs_create_pipeline(self):
         """A Bid / Spec pipeline with its five stages, for a database that has none yet."""
+        # The button is not Save, so the settings on screen, Bid / Spec turned on among them, are saved first.
+        self.set_values()
         stages = [
             (_("Review"), "review", False),
             (_("Bidding"), "bidding", False),

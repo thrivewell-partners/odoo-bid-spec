@@ -4,6 +4,7 @@
         <field name="name">res.partner.form.twp.bid.spec</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Bid / Spec" name="twp_bid_spec">
@@ -25,6 +26,7 @@
         <field name="name">res.partner.search.twp.bid.spec</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="twp_bs_role_ids"/>
