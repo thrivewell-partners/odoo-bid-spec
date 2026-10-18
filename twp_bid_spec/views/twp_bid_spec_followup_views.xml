@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="twp_bs_followup_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.followup.list</field>
+        <field name="model">twp.bid.spec.followup</field>
+        <field name="arch" type="xml">
+            <list string="Follow-ups" create="false" edit="false" delete="false"
+                  decoration-danger="date_deadline &lt; current_date"
+                  decoration-warning="date_deadline == current_date">
+                <field name="date_deadline"/>
+                <field name="days_due"/>
+                <field name="lead_id"/>
+                <field name="product_line_id"/>
+                <field name="partner_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="summary" optional="show"/>
+                <field name="last_contact_date"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="result" widget="badge" decoration-info="result == 'pending'"/>
+                <field name="quote_id" column_invisible="True"/>
+                <button name="action_log_touch" type="object" string="Log touch" icon="fa-phone"
+                        invisible="not quote_id"/>
+                <button name="action_open" type="object" icon="fa-arrow-right" title="Open"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="twp_bs_followup_view_search" model="ir.ui.view">
+        <field name="name">twp.bid.spec.followup.search</field>
+        <field name="model">twp.bid.spec.followup</field>
+        <field name="arch" type="xml">
+            <search string="Follow-ups">
+                <field name="lead_id"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter string="Due within 7 days" name="due_week"
+                        domain="[('date_deadline', '&lt;=', (context_today() + relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Overdue" name="overdue"
+                        domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Mine" name="mine" domain="[('user_id', '=', uid)]"/>
+                <group>
+                    <filter string="Rep" name="group_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Project" name="group_lead" context="{'group_by': 'lead_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_followup" model="ir.actions.act_window">
+        <field name="name">Follow-ups</field>
+        <field name="res_model">twp.bid.spec.followup</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_due_week': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing to chase this week</p>
+            <p>Follow-ups come from logging a bid or a touch. A bid leaves the queue once it is decided.</p>
+        </field>
+    </record>
+</odoo>

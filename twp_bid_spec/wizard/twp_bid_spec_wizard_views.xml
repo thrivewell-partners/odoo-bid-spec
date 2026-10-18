@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="twp_bs_review_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.review.form</field>
+        <field name="model">twp.bid.spec.review</field>
+        <field name="arch" type="xml">
+            <form string="Review">
+                <field name="lead_id" invisible="1"/>
+                <field name="decision" widget="radio" options="{'horizontal': true}"/>
+                <group>
+                    <field name="product_line_ids" widget="many2many_checkboxes" invisible="decision != 'pursue'"/>
+                    <field name="lost_reason_id" widget="selection_badge" invisible="decision != 'pass'"
+                           options="{'no_create': True}"/>
+                    <field name="note" placeholder="What the spec says, and why"/>
+                </group>
+                <field name="side_leads_enabled" invisible="1"/>
+                <group string="Side lead" invisible="not side_leads_enabled">
+                    <field name="side_lead"/>
+                    <field name="side_lead_name" invisible="not side_lead" required="side_lead"
+                           placeholder="e.g. GC's other job on the same site"/>
+                    <field name="side_lead_partner_id" invisible="not side_lead"/>
+                    <field name="side_lead_note" invisible="not side_lead"/>
+                </group>
+                <footer>
+                    <button name="action_apply" string="Pursue" type="object" class="btn-primary"
+                            invisible="decision != 'pursue'" data-hotkey="q"/>
+                    <button name="action_apply" string="Pass" type="object" class="btn-primary"
+                            invisible="decision != 'pass'" data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="twp_bs_log_quote_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.log.quote.form</field>
+        <field name="model">twp.bid.spec.log.quote</field>
+        <field name="arch" type="xml">
+            <form string="Log a bid">
+                <field name="lead_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="product_line_id" options="{'no_create': True}"/>
+                        <field name="partner_id"
+                               context="{'default_is_company': True, 'twp_bs_role_kind': 'contractor'}"/>
+                        <field name="source_id"/>
+                        <field name="user_id" widget="many2one_avatar_user"/>
+                    </group>
+                    <group>
+                        <field name="quoted" widget="boolean_toggle"/>
+                        <field name="date"/>
+                        <field name="quoted_as" invisible="not quoted"/>
+                        <field name="model_quoted" invisible="not quoted"/>
+                        <field name="amount" invisible="not quoted"/>
+                        <field name="margin" widget="percentage" invisible="not quoted"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="next_date"/>
+                    <field name="note"/>
+                </group>
+                <footer>
+                    <button name="action_apply" string="Log" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="twp_bs_touch_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.touch.form</field>
+        <field name="model">twp.bid.spec.touch</field>
+        <field name="arch" type="xml">
+            <form string="Log a touch">
+                <group>
+                    <field name="quote_id"/>
+                    <field name="date"/>
+                    <field name="channel" widget="radio" options="{'horizontal': true}"/>
+                    <field name="note" placeholder="What they said"/>
+                    <field name="next_date"/>
+                </group>
+                <footer>
+                    <button name="action_apply" string="Log" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="twp_bs_award_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.award.form</field>
+        <field name="model">twp.bid.spec.award</field>
+        <field name="arch" type="xml">
+            <form string="Award">
+                <field name="lead_id" invisible="1"/>
+                <p class="text-muted">
+                    One contractor wins the whole project. If they buy the equipment through a distributor we bid to,
+                    pick it under Bought through: its bid is the win. Leave the installed manufacturer empty until you
+                    know it. Those bids read "Awarded - Update" until then.
+                </p>
+                <group>
+                    <field name="quoted_partner_ids" widget="many2many_tags"/>
+                    <field name="awarded_partner_id"
+                           context="{'default_is_company': True, 'twp_bs_role_kind': 'contractor'}"/>
+                    <field name="bought_through_partner_id" domain="[('id', 'in', quoted_partner_ids)]"
+                           options="{'no_create': True}"/>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom" create="false" delete="false">
+                        <field name="job_id" column_invisible="True" force_save="1"/>
+                        <field name="product_line_id"/>
+                        <field name="quoted_partner_ids" widget="many2many_tags"/>
+                        <field name="installed_partner_id" domain="[('twp_bs_role_ids.kind', '=', 'manufacturer')]"
+                               context="{'default_is_company': True, 'twp_bs_role_kind': 'manufacturer'}"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_apply" string="Award" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

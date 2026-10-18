@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_twp_bs" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.twp.bid.spec</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Bid / Spec" name="twp_bid_spec">
+                    <setting id="twp_bs_pipelines" string="Pipelines"
+                             help="Sales teams ticked Bid / Spec track projects, jobs and contractor bids. Each stage's Bid / Spec step says what it means.">
+                        <field name="twp_bs_team_ids" widget="many2many_tags" readonly="1"/>
+                        <div class="mt8">
+                            <button name="action_twp_bs_create_pipeline" type="object" string="Create Bid / Spec pipeline"
+                                    icon="oi-arrow-right" class="btn-link" invisible="twp_bs_team_ids"/>
+                            <button name="sales_team.crm_team_action_pipeline" type="action" string="Sales teams"
+                                    icon="oi-arrow-right" class="btn-link"/>
+                            <button name="crm.crm_stage_action" type="action" string="Stages"
+                                    icon="oi-arrow-right" class="btn-link"/>
+                        </div>
+                    </setting>
+                    <setting id="twp_bs_bid_date" help="A Bid / Spec project cannot be saved without its bid date.">
+                        <field name="twp_bs_bid_date_required"/>
+                    </setting>
+                    <setting id="twp_bs_close" help="Each night, a card still in Bidding after its bid date moves to Bidding Closed.">
+                        <field name="twp_bs_close_after_bid_date"/>
+                    </setting>
+                    <setting id="twp_bs_days" string="Follow-ups and warnings">
+                        <div class="row mt8">
+                            <label for="twp_bs_followup_days" class="col-lg-6 o_light_label"/>
+                            <div class="col-lg-6"><field name="twp_bs_followup_days" class="oe_inline"/> days</div>
+                        </div>
+                        <div class="row">
+                            <label for="twp_bs_warning_days" class="col-lg-6 o_light_label"/>
+                            <div class="col-lg-6"><field name="twp_bs_warning_days" class="oe_inline"/> days</div>
+                        </div>
+                        <div class="row">
+                            <label for="twp_bs_due_window_days" class="col-lg-6 o_light_label"/>
+                            <div class="col-lg-6"><field name="twp_bs_due_window_days" class="oe_inline"/> days</div>
+                        </div>
+                    </setting>
+                    <setting id="twp_bs_cancelled" string="Cancelled / postponed"
+                             help="The lost reason that means the project was cancelled or postponed, rather than passed at review.">
+                        <field name="twp_bs_cancelled_reason_id" options="{'no_create': True}"/>
+                    </setting>
+                    <setting id="twp_bs_side_leads" string="Side leads"
+                             help="Where a side lead spotted at review is parked. Leave empty to turn side leads off.">
+                        <div class="row mt8">
+                            <label for="twp_bs_side_lead_team_id" string="Pipeline" class="col-lg-4 o_light_label"/>
+                            <field name="twp_bs_side_lead_team_id" class="col-lg-8" options="{'no_create': True}"/>
+                        </div>
+                        <div class="row" invisible="not twp_bs_side_lead_team_id">
+                            <label for="twp_bs_side_lead_stage_id" string="Stage" class="col-lg-4 o_light_label"/>
+                            <field name="twp_bs_side_lead_stage_id" class="col-lg-8" options="{'no_create': True}"/>
+                        </div>
+                    </setting>
+                    <setting id="twp_bs_lists" string="Lists"
+                             help="Product lines, project types, contact roles, bid sources, holds and lead services.">
+                        <div class="mt8 d-flex flex-column align-items-start">
+                            <button name="twp_bid_spec.action_twp_bs_product_line" type="action" string="Product lines" icon="oi-arrow-right" class="btn-link"/>
+                            <button name="twp_bid_spec.action_twp_bs_project_type" type="action" string="Project types" icon="oi-arrow-right" class="btn-link"/>
+                            <button name="twp_bid_spec.action_twp_bs_partner_role" type="action" string="Contact roles" icon="oi-arrow-right" class="btn-link"/>
+                            <button name="twp_bid_spec.action_twp_bs_source" type="action" string="Bid sources" icon="oi-arrow-right" class="btn-link"/>
+                            <button name="twp_bid_spec.action_twp_bs_hold" type="action" string="Holds" icon="oi-arrow-right" class="btn-link"/>
+                            <button name="twp_bid_spec.action_twp_bs_lead_service" type="action" string="Lead services" icon="oi-arrow-right" class="btn-link"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

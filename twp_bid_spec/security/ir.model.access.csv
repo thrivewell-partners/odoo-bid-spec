@@ -1,0 +1,22 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_twp_bs_job_user,twp.bid.spec.job user,model_twp_bid_spec_job,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_quote_user,twp.bid.spec.quote user,model_twp_bid_spec_quote,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_product_line_user,twp.bid.spec.product.line user,model_twp_bid_spec_product_line,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_product_line_manager,twp.bid.spec.product.line manager,model_twp_bid_spec_product_line,sales_team.group_sale_manager,1,1,1,1
+access_twp_bs_project_type_user,twp.bid.spec.project.type user,model_twp_bid_spec_project_type,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_project_type_manager,twp.bid.spec.project.type manager,model_twp_bid_spec_project_type,sales_team.group_sale_manager,1,1,1,1
+access_twp_bs_partner_role_user,twp.bid.spec.partner.role user,model_twp_bid_spec_partner_role,base.group_user,1,0,0,0
+access_twp_bs_partner_role_manager,twp.bid.spec.partner.role manager,model_twp_bid_spec_partner_role,sales_team.group_sale_manager,1,1,1,1
+access_twp_bs_source_user,twp.bid.spec.source user,model_twp_bid_spec_source,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_source_manager,twp.bid.spec.source manager,model_twp_bid_spec_source,sales_team.group_sale_manager,1,1,1,1
+access_twp_bs_hold_user,twp.bid.spec.hold user,model_twp_bid_spec_hold,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_hold_manager,twp.bid.spec.hold manager,model_twp_bid_spec_hold,sales_team.group_sale_manager,1,1,1,1
+access_twp_bs_followup_user,twp.bid.spec.followup user,model_twp_bid_spec_followup,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_review_user,twp.bid.spec.review user,model_twp_bid_spec_review,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_log_quote_user,twp.bid.spec.log.quote user,model_twp_bid_spec_log_quote,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_touch_user,twp.bid.spec.touch user,model_twp_bid_spec_touch,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_award_user,twp.bid.spec.award user,model_twp_bid_spec_award,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_award_line_user,twp.bid.spec.award.line user,model_twp_bid_spec_award_line,sales_team.group_sale_salesman,1,1,1,1
+access_twp_bs_contractor_scorecard_user,twp.bid.spec.contractor.scorecard user,model_twp_bid_spec_contractor_scorecard,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_engineer_scorecard_user,twp.bid.spec.engineer.scorecard user,model_twp_bid_spec_engineer_scorecard,sales_team.group_sale_salesman,1,0,0,0
+access_twp_bs_dashboard_user,twp.bid.spec.dashboard user,model_twp_bid_spec_dashboard,sales_team.group_sale_salesman,1,1,1,1

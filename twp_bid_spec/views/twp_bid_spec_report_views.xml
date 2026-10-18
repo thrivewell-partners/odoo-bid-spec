@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+The dashboard is a page with a reporting window; pivots and graphs on jobs and bids are the
+free-form version of the same numbers; the two scorecards are all-time.
+-->
+<odoo>
+    <!-- Dashboard -->
+
+    <template id="dashboard_body">
+        <div class="o_twp_bs_dashboard">
+            <p class="text-muted small">
+                A job is one project and one product line. Jobs and bids are counted by reporting
+                date (bid sent, or first contact if no bid yet); projects by bid date.
+            </p>
+            <div class="row g-2 mb-4">
+                <t t-foreach="cards" t-as="card">
+                    <div class="col-6 col-lg-3">
+                        <div class="border rounded p-2 h-100">
+                            <div class="small text-muted" t-out="card[0]"/>
+                            <div class="fs-4 fw-bold" t-out="card[1]"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-5">
+                    <h5>Funnel - projects in window</h5>
+                    <t t-foreach="charts['funnel']" t-as="bar">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small" style="width: 6.5rem; flex: none;" t-out="bar[0]"/>
+                            <div class="flex-grow-1 bg-light rounded" style="height: 1.5rem;">
+                                <div class="bg-primary rounded h-100" t-attf-style="width: {{ bar[2] }}%;"/>
+                            </div>
+                            <div class="small fw-bold text-end" style="width: 2.5rem; flex: none;" t-out="bar[1]"/>
+                        </div>
+                    </t>
+                </div>
+                <div class="col-lg-7">
+                    <h5>Jobs bid vs. won by month</h5>
+                    <div class="d-flex align-items-end border-bottom" style="height: 10rem;">
+                        <t t-foreach="charts['months']" t-as="month">
+                            <div class="flex-grow-1 d-flex align-items-end justify-content-center h-100"
+                                 t-attf-title="{{ month[0] }}: {{ month[1] }} bid, {{ month[2] }} won">
+                                <div class="bg-primary me-1" t-attf-style="width: 35%; height: {{ month[3] }}%;"/>
+                                <div class="bg-success" t-attf-style="width: 35%; height: {{ month[4] }}%;"/>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="d-flex">
+                        <t t-foreach="charts['months']" t-as="month">
+                            <div class="flex-grow-1 text-center small text-muted" style="width: 0;" t-out="month[0]"/>
+                        </t>
+                    </div>
+                    <div class="small mt-2">
+                        <span class="d-inline-block bg-primary align-middle me-1" style="width: .8rem; height: .8rem;"/>Jobs bid
+                        <span class="d-inline-block bg-success align-middle ms-3 me-1" style="width: .8rem; height: .8rem;"/>Jobs won
+                    </div>
+                </div>
+            </div>
+            <t t-foreach="tables" t-as="table">
+                <h5 class="mt-3" t-out="table['title']"/>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-4">
+                        <thead>
+                            <tr>
+                                <th t-foreach="table['columns']" t-as="col" t-out="col"
+                                    t-att-class="'text-end' if col_index in table['numeric'] else None"/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="table['rows']" t-as="row">
+                                <td t-foreach="row" t-as="cell" t-out="cell"
+                                    t-att-class="'text-end' if cell_index in table['numeric'] else None"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            <p class="text-muted small">
+                Job win rate = jobs won / jobs decided. Bid win rate = won bid lines / decided
+                bid lines (lower, because only one contractor can win a job). Won GP $ = bid $ x
+                margin % on the won line. On job tables, Bid $ counts each job once (the average
+                across the contractors bid).
+            </p>
+        </div>
+    </template>
+
+    <record id="twp_bs_dashboard_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.dashboard.form</field>
+        <field name="model">twp.bid.spec.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Bid / Spec dashboard">
+                <header>
+                    <button name="action_open_jobs" type="object" string="Jobs in this window" class="btn-secondary"/>
+                    <button name="action_open_quotes" type="object" string="Bids in this window" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Bid / Spec dashboard</h1>
+                    </div>
+                    <group>
+                        <group string="Reporting window">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <field name="body" nolabel="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_dashboard" model="ir.actions.act_window">
+        <field name="name">Bid / Spec dashboard</field>
+        <field name="res_model">twp.bid.spec.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Jobs: pivot and graph -->
+
+    <record id="twp_bs_job_view_pivot" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.pivot</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="arch" type="xml">
+            <pivot string="Jobs" sample="1">
+                <field name="product_line_id" type="row"/>
+                <field name="reporting_date" interval="quarter" type="col"/>
+                <field name="jobs_quoted" type="measure"/>
+                <field name="jobs_decided" type="measure"/>
+                <field name="jobs_won" type="measure"/>
+                <field name="quoted_amount" type="measure"/>
+                <field name="won_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="twp_bs_job_view_graph" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.graph</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="arch" type="xml">
+            <graph string="Jobs" type="bar" sample="1">
+                <field name="reporting_date" interval="month"/>
+                <field name="jobs_won" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_job_analysis" model="ir.actions.act_window">
+        <field name="name">Job analysis</field>
+        <field name="res_model">twp.bid.spec.job</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+        <field name="context">{'search_default_quoted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No jobs bid yet</p>
+            <p>Every job with a contractor bid, to slice by product line, engineer, lead service, project type or month.</p>
+        </field>
+    </record>
+
+    <!-- Quotes: pivot and graph -->
+
+    <record id="twp_bs_quote_view_pivot" model="ir.ui.view">
+        <field name="name">twp.bid.spec.quote.pivot</field>
+        <field name="model">twp.bid.spec.quote</field>
+        <field name="arch" type="xml">
+            <pivot string="Bids" sample="1">
+                <field name="source_id" type="row"/>
+                <field name="reporting_date" interval="quarter" type="col"/>
+                <field name="quotes_sent" type="measure"/>
+                <field name="quotes_decided" type="measure"/>
+                <field name="quotes_won" type="measure"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="twp_bs_quote_view_graph" model="ir.ui.view">
+        <field name="name">twp.bid.spec.quote.graph</field>
+        <field name="model">twp.bid.spec.quote</field>
+        <field name="arch" type="xml">
+            <graph string="Bids" type="bar" sample="1">
+                <field name="quote_date" interval="month"/>
+                <field name="quotes_sent" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_quote_analysis" model="ir.actions.act_window">
+        <field name="name">Bid analysis</field>
+        <field name="res_model">twp.bid.spec.quote</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No bids yet</p>
+            <p>Every contractor bid, to slice by source, contractor, rep, result or month.</p>
+        </field>
+    </record>
+
+    <!-- Contractor scorecard -->
+
+    <record id="twp_bs_contractor_scorecard_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.contractor.scorecard.list</field>
+        <field name="model">twp.bid.spec.contractor.scorecard</field>
+        <field name="arch" type="xml">
+            <list string="Contractor scorecard" create="false" edit="false" delete="false">
+                <field name="partner_id"/>
+                <field name="lines_tracked" sum="Lines"/>
+                <field name="quotes_sent" sum="Sent"/>
+                <field name="quotes_decided" sum="Decided"/>
+                <field name="quotes_won" sum="Won"/>
+                <field name="win_rate" widget="percentage" invisible="not quotes_decided"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="won_amount" sum="Won $"/>
+                <field name="jobs_awarded" sum="Awarded"/>
+                <field name="last_activity"/>
+                <field name="days_since_contact" invisible="not last_activity"
+                       decoration-danger="days_since_contact &gt; 60" decoration-warning="days_since_contact &gt; 30"/>
+                <button name="action_open_quotes" type="object" icon="fa-arrow-right" title="Open their bids"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="twp_bs_contractor_scorecard_view_search" model="ir.ui.view">
+        <field name="name">twp.bid.spec.contractor.scorecard.search</field>
+        <field name="model">twp.bid.spec.contractor.scorecard</field>
+        <field name="arch" type="xml">
+            <search string="Contractor scorecard">
+                <field name="partner_id"/>
+                <filter string="Bid" name="quoted" domain="[('quotes_sent', '&gt;', 0)]"/>
+                <filter string="Never bid" name="never_quoted" domain="[('quotes_sent', '=', 0)]"/>
+                <filter string="No contact in 60 days" name="cold" domain="[('days_since_contact', '&gt;', 60)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_contractor_scorecard" model="ir.actions.act_window">
+        <field name="name">Contractor scorecard</field>
+        <field name="res_model">twp.bid.spec.contractor.scorecard</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No contractors yet</p>
+            <p>A contractor appears here once they have a role of the Contractor kind or have had a bid.</p>
+        </field>
+    </record>
+
+    <!-- Engineer scorecard -->
+
+    <record id="twp_bs_engineer_scorecard_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.engineer.scorecard.list</field>
+        <field name="model">twp.bid.spec.engineer.scorecard</field>
+        <field name="arch" type="xml">
+            <list string="Engineer scorecard" create="false" edit="false" delete="false">
+                <field name="partner_id"/>
+                <field name="projects" sum="Projects"/>
+                <field name="jobs_tracked" sum="Jobs"/>
+                <field name="jobs_bod_ours" sum="BOD ours"/>
+                <field name="bod_rate" widget="percentage" invisible="not jobs_tracked"/>
+                <field name="jobs_decided" sum="Decided"/>
+                <field name="jobs_won" sum="Won"/>
+                <field name="win_rate" widget="percentage" invisible="not jobs_decided"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="won_amount" sum="Won $"/>
+                <button name="action_open_jobs" type="object" icon="fa-arrow-right" title="Open their jobs"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="twp_bs_engineer_scorecard_view_search" model="ir.ui.view">
+        <field name="name">twp.bid.spec.engineer.scorecard.search</field>
+        <field name="model">twp.bid.spec.engineer.scorecard</field>
+        <field name="arch" type="xml">
+            <search string="Engineer scorecard">
+                <field name="partner_id"/>
+                <filter string="Specs our equipment" name="bod_ours" domain="[('jobs_bod_ours', '&gt;', 0)]"/>
+                <filter string="Has jobs" name="has_jobs" domain="[('jobs_tracked', '&gt;', 0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_engineer_scorecard" model="ir.actions.act_window">
+        <field name="name">Engineer scorecard</field>
+        <field name="res_model">twp.bid.spec.engineer.scorecard</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No engineers yet</p>
+            <p>An engineering firm appears here once it has a role of the Engineer kind or is named on a project.</p>
+        </field>
+    </record>
+</odoo>

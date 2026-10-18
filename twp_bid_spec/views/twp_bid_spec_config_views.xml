@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="twp_bs_product_line_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.product.line.list</field>
+        <field name="model">twp.bid.spec.product.line</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_product_line" model="ir.actions.act_window">
+        <field name="name">Product lines</field>
+        <field name="res_model">twp.bid.spec.product.line</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="twp_bs_project_type_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.project.type.list</field>
+        <field name="model">twp.bid.spec.project.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_project_type" model="ir.actions.act_window">
+        <field name="name">Project types</field>
+        <field name="res_model">twp.bid.spec.project.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="twp_bs_partner_role_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.partner.role.list</field>
+        <field name="model">twp.bid.spec.partner.role</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_partner_role" model="ir.actions.act_window">
+        <field name="name">Contact roles</field>
+        <field name="res_model">twp.bid.spec.partner.role</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="twp_bs_source_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.source.list</field>
+        <field name="model">twp.bid.spec.source</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_source" model="ir.actions.act_window">
+        <field name="name">Bid sources</field>
+        <field name="res_model">twp.bid.spec.source</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="twp_bs_hold_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.hold.list</field>
+        <field name="model">twp.bid.spec.hold</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_hold" model="ir.actions.act_window">
+        <field name="name">Holds</field>
+        <field name="res_model">twp.bid.spec.hold</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Lead services are UTM sources, with what each costs a year. -->
+    <record id="utm_source_view_list_twp_bs" model="ir.ui.view">
+        <field name="name">utm.source.list.twp.bs</field>
+        <field name="model">utm.source</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="twp_bs_currency_id" column_invisible="True"/>
+                <field name="twp_bs_annual_cost"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_twp_bs_lead_service" model="ir.actions.act_window">
+        <field name="name">Lead services</field>
+        <field name="res_model">utm.source</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="utm_source_view_list_twp_bs"/>
+    </record>
+</odoo>

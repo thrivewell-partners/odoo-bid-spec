@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="twp_bs_job_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.form</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="arch" type="xml">
+            <form string="Job">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Job">
+                            <field name="lead_id" readonly="id" options="{'no_create': True}"/>
+                            <field name="product_line_id" options="{'no_create': True}"/>
+                            <field name="project_status"/>
+                        </group>
+                        <group string="Spec">
+                            <field name="bod_partner_id" domain="[('twp_bs_role_ids.kind', '=', 'manufacturer')]"
+                                   context="{'default_is_company': True, 'twp_bs_role_kind': 'manufacturer'}"/>
+                            <field name="bod_model"/>
+                            <field name="bod_is_ours"/>
+                            <field name="or_equal"/>
+                        </group>
+                        <group string="Outcome">
+                            <field name="awarded_partner_id"
+                                   context="{'default_is_company': True, 'twp_bs_role_kind': 'contractor'}"/>
+                            <field name="bought_through_partner_id" invisible="not bought_through_partner_id"/>
+                            <field name="installed_partner_id" domain="[('twp_bs_role_ids.kind', '=', 'manufacturer')]"
+                                   context="{'default_is_company': True, 'twp_bs_role_kind': 'manufacturer'}"/>
+                        </group>
+                        <group string="Figures">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="is_quoted"/>
+                            <field name="is_decided"/>
+                            <field name="is_won"/>
+                            <field name="quoted_amount"/>
+                            <field name="pending_amount"/>
+                            <field name="won_amount"/>
+                            <field name="won_gross_profit"/>
+                            <field name="reporting_date"/>
+                        </group>
+                    </group>
+                    <separator string="Bids"/>
+                    <field name="quote_ids" context="{'default_job_id': id}">
+                        <list editable="bottom">
+                            <field name="partner_id"
+                                   context="{'default_is_company': True, 'twp_bs_role_kind': 'contractor'}"/>
+                            <field name="source_id" optional="show"/>
+                            <field name="user_id" optional="hide" widget="many2one_avatar_user"/>
+                            <field name="quoted_as" optional="show"/>
+                            <field name="model_quoted" optional="show"/>
+                            <field name="first_contact_date" optional="show"/>
+                            <field name="quote_date"/>
+                            <field name="last_contact_date" optional="hide"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="amount"/>
+                            <field name="margin" widget="percentage" optional="show"/>
+                            <field name="gross_profit" optional="hide"/>
+                            <field name="result_override" optional="hide"/>
+                            <field name="result" widget="badge"
+                                   decoration-success="result == 'won'"
+                                   decoration-danger="result in ('lost_contractor', 'lost_mfr', 'project_dead')"
+                                   decoration-warning="result == 'awarded_update'"
+                                   decoration-info="result == 'pending'"/>
+                            <button name="action_open_record" type="object" icon="fa-arrow-right" title="Open the bid"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="twp_bs_job_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.list</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="arch" type="xml">
+            <list string="Jobs">
+                <field name="lead_id"/>
+                <field name="product_line_id"/>
+                <field name="project_status" optional="show"/>
+                <field name="engineer_id" optional="hide"/>
+                <field name="bod_partner_id" optional="show"/>
+                <field name="bod_is_ours" optional="show"/>
+                <field name="quote_count"/>
+                <field name="awarded_partner_id" optional="show"/>
+                <field name="installed_partner_id" optional="show"/>
+                <field name="reporting_date" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="quoted_amount" sum="Bid"/>
+                <field name="pending_amount" sum="Pending" optional="show"/>
+                <field name="won_amount" sum="Won"/>
+                <field name="won_gross_profit" sum="Won GP" optional="hide"/>
+                <field name="is_decided" optional="hide"/>
+                <field name="is_won"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="twp_bs_job_view_search" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.search</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="arch" type="xml">
+            <search string="Jobs">
+                <field name="lead_id"/>
+                <field name="product_line_id"/>
+                <field name="engineer_id"/>
+                <field name="bod_partner_id"/>
+                <field name="awarded_partner_id"/>
+                <field name="lead_source_id"/>
+                <filter string="Bid sent" name="quoted" domain="[('is_quoted', '=', True)]"/>
+                <filter string="Open" name="open" domain="[('is_quoted', '=', True), ('is_decided', '=', False), ('project_status', '!=', 'cancelled')]"/>
+                <filter string="Decided" name="decided" domain="[('is_decided', '=', True)]"/>
+                <filter string="Won" name="won" domain="[('is_won', '=', True)]"/>
+                <filter string="Our equipment is BOD" name="bod_ours" domain="[('bod_is_ours', '=', True)]"/>
+                <separator/>
+                <filter string="Reporting date" name="reporting_date" date="reporting_date"/>
+                <group>
+                    <filter string="Project" name="group_lead" context="{'group_by': 'lead_id'}"/>
+                    <filter string="Product line" name="group_product_line" context="{'group_by': 'product_line_id'}"/>
+                    <filter string="Engineer" name="group_engineer" context="{'group_by': 'engineer_id'}"/>
+                    <filter string="Project type" name="group_project_type" context="{'group_by': 'project_type_id'}"/>
+                    <filter string="Lead service" name="group_lead_source" context="{'group_by': 'lead_source_id'}"/>
+                    <filter string="Bid as" name="group_quoted_as" context="{'group_by': 'quoted_as'}"/>
+                    <filter string="Our equipment is BOD" name="group_bod_ours" context="{'group_by': 'bod_is_ours'}"/>
+                    <filter string="Reporting month" name="group_month" context="{'group_by': 'reporting_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_twp_bs_job" model="ir.actions.act_window">
+        <field name="name">Jobs</field>
+        <field name="res_model">twp.bid.spec.job</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No jobs yet</p>
+            <p>A job is one project and one product line. Add them from a project's Bid / Spec page.</p>
+        </field>
+    </record>
+</odoo>

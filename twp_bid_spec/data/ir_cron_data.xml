@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Overnight, so a card leaves Bidding the day after its bid date, not the evening of it. -->
+    <record id="cron_close_past_bids" model="ir.cron">
+        <field name="name">Bid / Spec: move past bids to Bidding Closed</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="code">model._twp_bs_cron_close_past_bids()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 07:00:00')"/>
+    </record>
+</odoo>

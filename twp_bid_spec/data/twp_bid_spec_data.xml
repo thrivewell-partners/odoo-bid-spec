@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Starting lists, the admin's to edit once installed. -->
+<odoo noupdate="1">
+    <record id="lost_reason_cancelled" model="crm.lost.reason">
+        <field name="name">Cancelled / postponed</field>
+    </record>
+
+    <record id="source_proactive_bidder" model="twp.bid.spec.source"><field name="name">Proactive - Bidder List</field><field name="kind">proactive</field><field name="sequence">1</field></record>
+    <record id="source_proactive_relationship" model="twp.bid.spec.source"><field name="name">Proactive - Existing Relationship</field><field name="kind">proactive</field><field name="sequence">2</field></record>
+    <record id="source_inbound" model="twp.bid.spec.source"><field name="name">Inbound - Contractor Request</field><field name="kind">inbound</field><field name="sequence">3</field></record>
+    <record id="source_referral" model="twp.bid.spec.source"><field name="name">Referral / Other</field><field name="kind">other</field><field name="sequence">4</field></record>
+
+    <record id="project_type_warehouse" model="twp.bid.spec.project.type"><field name="name">Warehouse / Distribution</field><field name="sequence">1</field></record>
+    <record id="project_type_manufacturing" model="twp.bid.spec.project.type"><field name="name">Manufacturing / Industrial</field><field name="sequence">2</field></record>
+    <record id="project_type_retail" model="twp.bid.spec.project.type"><field name="name">Retail / Service</field><field name="sequence">3</field></record>
+    <record id="project_type_school" model="twp.bid.spec.project.type"><field name="name">School / Education</field><field name="sequence">4</field></record>
+    <record id="project_type_church" model="twp.bid.spec.project.type"><field name="name">Church / Community</field><field name="sequence">5</field></record>
+    <record id="project_type_municipal" model="twp.bid.spec.project.type"><field name="name">Municipal / Fire / Public Works</field><field name="sequence">6</field></record>
+    <record id="project_type_aviation" model="twp.bid.spec.project.type"><field name="name">Aviation / Hangar</field><field name="sequence">7</field></record>
+    <record id="project_type_agricultural" model="twp.bid.spec.project.type"><field name="name">Agricultural</field><field name="sequence">8</field></record>
+    <record id="project_type_recreation" model="twp.bid.spec.project.type"><field name="name">Recreation / Fitness</field><field name="sequence">9</field></record>
+    <record id="project_type_healthcare" model="twp.bid.spec.project.type"><field name="name">Healthcare</field><field name="sequence">10</field></record>
+    <record id="project_type_office" model="twp.bid.spec.project.type"><field name="name">Office</field><field name="sequence">11</field></record>
+    <record id="project_type_other" model="twp.bid.spec.project.type"><field name="name">Other</field><field name="sequence">12</field></record>
+
+    <record id="role_mechanical" model="twp.bid.spec.partner.role"><field name="name">Mechanical contractor</field><field name="kind">contractor</field><field name="sequence">1</field><field name="color">1</field></record>
+    <record id="role_electrical" model="twp.bid.spec.partner.role"><field name="name">Electrical contractor</field><field name="kind">contractor</field><field name="sequence">2</field><field name="color">2</field></record>
+    <record id="role_gc" model="twp.bid.spec.partner.role"><field name="name">General contractor</field><field name="kind">gc</field><field name="sequence">3</field><field name="color">3</field></record>
+    <record id="role_engineer" model="twp.bid.spec.partner.role"><field name="name">Engineer</field><field name="kind">engineer</field><field name="sequence">4</field><field name="color">4</field></record>
+    <record id="role_architect" model="twp.bid.spec.partner.role"><field name="name">Architect</field><field name="kind">architect</field><field name="sequence">5</field><field name="color">5</field></record>
+    <record id="role_distributor" model="twp.bid.spec.partner.role"><field name="name">Distributor</field><field name="kind">distributor</field><field name="sequence">6</field><field name="color">6</field></record>
+    <record id="role_manufacturer" model="twp.bid.spec.partner.role"><field name="name">Manufacturer</field><field name="kind">manufacturer</field><field name="sequence">7</field><field name="color">7</field></record>
+</odoo>

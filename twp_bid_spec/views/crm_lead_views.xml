@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Bid / Spec page on a project. Shown only on Bid / Spec pipelines. -->
+    <record id="crm_lead_view_form_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.form.twp.bid.spec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_set_won_rainbowman']" position="attributes">
+                <!-- Bid / Spec wins are counted per job, never by Odoo's all-or-nothing Won. -->
+                <attribute name="invisible" add="twp_bs_is_bid_spec" separator=" or "/>
+            </xpath>
+            <xpath expr="//header/field[@name='stage_id']" position="before">
+                <field name="twp_bs_is_bid_spec" invisible="1"/>
+                <field name="twp_bs_step" invisible="1"/>
+                <field name="twp_bs_bid_date_required" invisible="1"/>
+                <button name="action_twp_bs_review" string="Review" type="object" class="oe_highlight"
+                        invisible="not twp_bs_is_bid_spec or twp_bs_step != 'review' or not active"/>
+                <button name="action_twp_bs_log_quote" string="Log bid" type="object" class="oe_highlight"
+                        invisible="not twp_bs_is_bid_spec or twp_bs_status not in ('bidding', 'opened') or twp_bs_step == 'review'"/>
+                <button name="action_twp_bs_award" string="Award" type="object"
+                        invisible="not twp_bs_is_bid_spec or twp_bs_status not in ('bidding', 'opened', 'awarded') or not twp_bs_job_ids or twp_bs_step == 'review'"/>
+                <button name="action_twp_bs_project_dead" string="Cancelled / postponed" type="object"
+                        invisible="not twp_bs_is_bid_spec or not active or twp_bs_step == 'review'"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_twp_bs_open_quotes" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not twp_bs_is_bid_spec">
+                    <field name="twp_bs_quote_count" widget="statinfo" string="Bids"/>
+                </button>
+            </xpath>
+            <xpath expr="//group[@name='opportunity_partner']" position="inside">
+                <field name="twp_bs_origin_lead_id" invisible="not twp_bs_origin_lead_id" readonly="1"/>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page string="Bid / Spec" name="twp_bid_spec" invisible="not twp_bs_is_bid_spec">
+                    <group>
+                        <group string="Project" name="twp_bs_project">
+                            <field name="twp_bs_status"/>
+                            <field name="twp_bs_project_type_id" options="{'no_create': True}"/>
+                            <field name="twp_bs_bid_date" required="twp_bs_is_bid_spec and twp_bs_bid_date_required"/>
+                            <field name="twp_bs_days_to_bid" invisible="not twp_bs_bid_date"/>
+                            <label for="city" string="City / State"/>
+                            <div class="o_row">
+                                <field name="city" placeholder="City"/>
+                                <field name="state_id" placeholder="State" options="{'no_open': True, 'no_create': True}"/>
+                            </div>
+                            <field name="source_id" string="Lead service"/>
+                            <field name="twp_bs_lead_reference"/>
+                            <field name="twp_bs_plans_url" widget="url"/>
+                        </group>
+                        <group string="Who" name="twp_bs_who">
+                            <field name="twp_bs_architect_id" context="{'default_is_company': True, 'twp_bs_role_kind': 'architect'}"/>
+                            <field name="twp_bs_engineer_id" context="{'default_is_company': True, 'twp_bs_role_kind': 'engineer'}"/>
+                            <field name="twp_bs_gc_id" context="{'default_is_company': True, 'twp_bs_role_kind': 'gc'}"/>
+                            <field name="twp_bs_owner_id" context="{'default_is_company': True}"/>
+                            <field name="twp_bs_hold_id" options="{'no_create': True}"/>
+                            <field name="twp_bs_hold_note" invisible="not twp_bs_hold_id"/>
+                        </group>
+                    </group>
+                    <field name="twp_bs_substitution_note" placeholder="Substitution note: what the spec allows, and what we would offer instead"/>
+                    <separator string="Jobs"/>
+                    <field name="twp_bs_job_ids" context="{'default_lead_id': id}">
+                        <list>
+                            <field name="product_line_id"/>
+                            <field name="bod_partner_id"/>
+                            <field name="bod_model" optional="show"/>
+                            <field name="bod_is_ours" optional="show"/>
+                            <field name="quote_count"/>
+                            <field name="awarded_partner_id" optional="show"/>
+                            <field name="bought_through_partner_id" optional="hide"/>
+                            <field name="installed_partner_id" optional="show"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="quoted_amount" sum="Bid"/>
+                            <field name="is_won" optional="show"/>
+                            <field name="won_amount" optional="hide" sum="Won"/>
+                            <button name="action_open_record" type="object" icon="fa-arrow-right" title="Open the job"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer" string="Lines">
+                        <field name="twp_bs_quotes_sent_count"/>
+                        <field name="twp_bs_quotes_decided_count"/>
+                        <field name="twp_bs_quotes_won_count"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- A Bid / Spec card cannot be added from the board without its bid date. -->
+    <record id="quick_create_opportunity_form_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.form.quick_create.twp.bid.spec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.quick_create_opportunity_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']/.." position="after">
+                <field name="twp_bs_is_bid_spec" invisible="1"/>
+                <field name="twp_bs_bid_date_required" invisible="1"/>
+                <div class="d-flex align-items-center" colspan="2" invisible="not twp_bs_is_bid_spec">
+                    <i class="fa fa-calendar" title="Bid date"/>
+                    <field name="twp_bs_bid_date" nolabel="1" placeholder="Bid date" class="o_field_highlight w-100 mb-0"
+                           required="twp_bs_is_bid_spec and twp_bs_bid_date_required"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Bid date and hold on the pipeline card. -->
+    <record id="crm_lead_view_kanban_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.twp.bid.spec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='card']/field[@name='name']" position="after">
+                <div class="d-flex flex-wrap align-items-center gap-1 small" name="twp_bs_card"
+                     invisible="not twp_bs_bid_date and not twp_bs_hold_id">
+                    <span invisible="not twp_bs_bid_date" class="text-muted">Bid <field name="twp_bs_bid_date"/></span>
+                    <field name="twp_bs_hold_id" widget="badge" decoration-warning="1" invisible="not twp_bs_hold_id"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_list_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.list.twp.bid.spec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="twp_bs_bid_date" optional="show"/>
+                <field name="twp_bs_status" optional="show"/>
+                <field name="twp_bs_engineer_id" optional="hide"/>
+                <field name="twp_bs_project_type_id" optional="hide"/>
+                <field name="twp_bs_quote_count" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_search_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.search.twp.bid.spec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="twp_bs_engineer_id"/>
+                <field name="twp_bs_architect_id"/>
+                <field name="twp_bs_project_type_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The board of every Bid / Spec pipeline. -->
+    <record id="action_twp_bs_pipeline" model="ir.actions.server">
+        <field name="name">Bid / Spec</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_twp_bs_pipeline()</field>
+    </record>
+</odoo>

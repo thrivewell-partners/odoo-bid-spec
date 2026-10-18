@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_view_form_twp_bs" model="ir.ui.view">
+        <field name="name">res.partner.form.twp.bid.spec</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Bid / Spec" name="twp_bid_spec">
+                    <group>
+                        <group name="twp_bs_roles">
+                            <field name="twp_bs_role_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}"/>
+                        </group>
+                        <group string="Manufacturer" name="twp_bs_manufacturer">
+                            <field name="twp_bs_we_represent"/>
+                            <field name="twp_bs_product_line_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_view_search_twp_bs" model="ir.ui.view">
+        <field name="name">res.partner.search.twp.bid.spec</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="twp_bs_role_ids"/>
+            </xpath>
+            <xpath expr="//search" position="inside">
+                <filter string="We represent" name="twp_bs_we_represent" domain="[('twp_bs_we_represent', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
