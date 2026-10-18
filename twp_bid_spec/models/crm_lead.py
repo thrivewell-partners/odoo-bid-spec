@@ -12,7 +12,7 @@ class CrmLead(models.Model):
 
     twp_bs_is_bid_spec = fields.Boolean(
         related="team_id.twp_bs_enabled", string="Is Bid / Spec", store=True, index=True)
-    twp_bs_step = fields.Selection(STEPS, related="stage_id.twp_bs_step", string="Bid / Spec step")
+    twp_bs_step = fields.Selection(related="stage_id.twp_bs_step", string="Bid / Spec step")
     twp_bs_status = fields.Selection([
         ("bidding", "Bidding"),
         ("opened", "Bidding Closed"),

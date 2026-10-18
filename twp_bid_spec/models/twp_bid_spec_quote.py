@@ -2,8 +2,6 @@ from markupsafe import Markup
 
 from odoo import _, api, fields, models
 
-from .twp_bid_spec_lookup import SOURCE_KINDS
-
 RESULTS = [
     ("not_quoted", "Not Bid Yet"),
     ("pending", "Pending"),
@@ -37,7 +35,7 @@ class TwpBidSpecQuote(models.Model):
     currency_id = fields.Many2one(related="job_id.currency_id", store=True)
     partner_id = fields.Many2one("res.partner", string="Contractor", required=True, index=True, tracking=True)
     source_id = fields.Many2one("twp.bid.spec.source", string="Bid source")
-    source_kind = fields.Selection(SOURCE_KINDS, string="Outreach", related="source_id.kind", store=True)
+    source_kind = fields.Selection(related="source_id.kind", string="Outreach", store=True)
     user_id = fields.Many2one("res.users", string="Bid by", default=lambda self: self.env.user, tracking=True)
     model_quoted = fields.Char("Model we bid")
     quoted_as = fields.Selection(QUOTED_AS, string="Bid as")
