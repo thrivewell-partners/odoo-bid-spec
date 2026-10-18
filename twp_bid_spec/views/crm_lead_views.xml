@@ -110,10 +110,9 @@
         <field name="name">crm.lead.kanban.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='card']/field[@name='name']" position="after">
-                <div class="d-flex flex-wrap align-items-center gap-1 small" name="twp_bs_card"
+                <div class="d-flex flex-wrap align-items-center gap-1 small" name="twp_bs_card" groups="twp_bid_spec.group_twp_bid_spec"
                      invisible="not twp_bs_bid_date and not twp_bs_hold_id">
                     <span invisible="not twp_bs_bid_date" class="text-muted">Bid <field name="twp_bs_bid_date"/></span>
                     <field name="twp_bs_hold_id" widget="badge" decoration-warning="1" invisible="not twp_bs_hold_id"/>
@@ -126,14 +125,13 @@
         <field name="name">crm.lead.list.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="twp_bs_bid_date" optional="show"/>
-                <field name="twp_bs_status" optional="show"/>
-                <field name="twp_bs_engineer_id" optional="hide"/>
-                <field name="twp_bs_project_type_id" optional="hide"/>
-                <field name="twp_bs_quote_count" optional="hide"/>
+                <field name="twp_bs_bid_date" optional="show" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_status" optional="show" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_engineer_id" optional="hide" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_project_type_id" optional="hide" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_quote_count" optional="hide" groups="twp_bid_spec.group_twp_bid_spec"/>
             </xpath>
         </field>
     </record>
@@ -142,12 +140,11 @@
         <field name="name">crm.lead.search.twp.bid.spec</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="twp_bs_engineer_id"/>
-                <field name="twp_bs_architect_id"/>
-                <field name="twp_bs_project_type_id"/>
+                <field name="twp_bs_engineer_id" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_architect_id" groups="twp_bid_spec.group_twp_bid_spec"/>
+                <field name="twp_bs_project_type_id" groups="twp_bid_spec.group_twp_bid_spec"/>
             </xpath>
         </field>
     </record>

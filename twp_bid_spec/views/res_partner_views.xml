@@ -4,10 +4,9 @@
         <field name="name">res.partner.form.twp.bid.spec</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Bid / Spec" name="twp_bid_spec">
+                <page string="Bid / Spec" name="twp_bid_spec" groups="twp_bid_spec.group_twp_bid_spec">
                     <group>
                         <group name="twp_bs_roles">
                             <field name="twp_bs_role_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}"/>
@@ -26,13 +25,12 @@
         <field name="name">res.partner.search.twp.bid.spec</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_res_partner_filter"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="twp_bs_role_ids"/>
+                <field name="twp_bs_role_ids" groups="twp_bid_spec.group_twp_bid_spec"/>
             </xpath>
             <xpath expr="//search" position="inside">
-                <filter string="We represent" name="twp_bs_we_represent" domain="[('twp_bs_we_represent', '=', True)]"/>
+                <filter string="We represent" name="twp_bs_we_represent" domain="[('twp_bs_we_represent', '=', True)]" groups="twp_bid_spec.group_twp_bid_spec"/>
             </xpath>
         </field>
     </record>

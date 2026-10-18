@@ -4,10 +4,9 @@
         <field name="name">crm.team.form.twp.bid.spec</field>
         <field name="model">crm.team</field>
         <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='options_active']" position="inside">
-                <span name="twp_bid_spec">
+                <span name="twp_bid_spec" groups="twp_bid_spec.group_twp_bid_spec">
                     <field name="twp_bs_enabled"/>
                     <label for="twp_bs_enabled"/>
                 </span>
@@ -19,10 +18,9 @@
         <field name="name">crm.stage.form.twp.bid.spec</field>
         <field name="model">crm.stage</field>
         <field name="inherit_id" ref="crm.crm_stage_form"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <field name="is_won" position="after">
-                <field name="twp_bs_step"/>
+                <field name="twp_bs_step" groups="twp_bid_spec.group_twp_bid_spec"/>
             </field>
         </field>
     </record>
@@ -31,10 +29,9 @@
         <field name="name">crm.stage.list.twp.bid.spec</field>
         <field name="model">crm.stage</field>
         <field name="inherit_id" ref="crm.crm_stage_tree"/>
-        <field name="group_ids" eval="[(4, ref('group_twp_bid_spec'))]"/>
         <field name="arch" type="xml">
             <field name="is_won" position="after">
-                <field name="twp_bs_step" optional="show"/>
+                <field name="twp_bs_step" optional="show" groups="twp_bid_spec.group_twp_bid_spec"/>
             </field>
         </field>
     </record>
