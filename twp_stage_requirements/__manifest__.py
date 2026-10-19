@@ -7,7 +7,7 @@ the field is filled in. The card shows the first unmet one, on the board and at 
 form. A stage can also name a date field to fill with today when a card first reaches it.
 Configured on each stage, under CRM > Configuration > Stages.
 """,
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales/CRM",
     "license": "LGPL-3",
     "author": "ThriveWell Partners",

@@ -8,7 +8,7 @@ first client.
 
 | Module | Status | What it does |
 |---|---|---|
-| `twp_stage_requirements` | Built, 19.0.1.0.0 | Each CRM stage can list the fields a card needs there, with a warning shown on the card while one is empty, and stamp a date when a card first reaches it |
+| `twp_stage_requirements` | Built, 19.0.1.0.1 | Each CRM stage can list the fields a card needs there, with a warning shown on the card while one is empty, and stamp a date when a card first reaches it |
 | `twp_bid_spec` | Built, 19.0.1.1.0 | Bid / Spec projects, jobs (one project and one product line), contractor bids, the result of each bid, review, award, follow-ups, the dashboard and scorecards |
 | `twp_bid_spec_sale` | Built, 19.0.1.0.0, installs on its own when both are present | Bids built in Sales fill the contractor bids with the amount their total counts, sending one books the follow-up, and Award turns the winning bid into the quotation (or makes one from a bid logged by hand) and marks the others lost. Depends on `twp_bids` from `odoo-advanced-quoting` |
 

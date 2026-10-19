@@ -79,3 +79,14 @@ class TestStageRequirements(TransactionCase):
     def test_created_in_a_stamping_stage(self):
         card = self._card(self.quoted)
         self.assertEqual(card.date_deadline, fields.Date.context_today(card))
+
+    def test_field_name_follows_the_requirement_not_the_field_definitions(self):
+        requirement = self.request.twp_requirement_ids[0]
+        self.assertEqual(requirement.field_name, "partner_id")
+        requirement.field_id = self.env["ir.model.fields"]._get("crm.lead", "email_from")
+        self.assertEqual(requirement.field_name, "email_from")
+        Requirement = self.env["twp.stage.requirement"]
+        self.assertEqual(
+            tuple(self.env.registry.field_depends[Requirement._fields["field_name"]]), ("field_id",),
+            "Depending on field_id.name would recompute it mid-install, before a module's new "
+            "ir_model_fields columns exist (installing website failed that way)")
