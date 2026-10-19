@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- A Bid / Spec card's quotation comes from Award, and its Bids button lists the contractor
+         bids, one row per contractor and job, so Sales' New Quotation and Bids buttons step aside.
+         New Bid stays: it is how a bid is built in Sales. -->
+    <record id="crm_lead_view_form" model="ir.ui.view">
+        <field name="name">crm.lead.form.twp.bid.spec.sale</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="twp_bids.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_sale_quotations_new']" position="attributes">
+                <attribute name="invisible" add="twp_bs_is_bid_spec" separator=" or "/>
+            </xpath>
+            <xpath expr="//button[@name='action_twp_view_bids']" position="attributes">
+                <attribute name="invisible" add="twp_bs_is_bid_spec" separator=" or "/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_form_twp_bs" model="ir.ui.view">
+        <field name="name">crm.lead.form.twp.bid.spec.sale.jobs</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="twp_bid_spec.crm_lead_view_form_twp_bs"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='twp_bs_job_ids']/list/field[@name='won_amount']" position="after">
+                <field name="sale_order_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

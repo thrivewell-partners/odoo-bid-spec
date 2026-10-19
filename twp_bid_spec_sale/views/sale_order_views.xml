@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form.twp.bid.spec.sale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="twp_bids.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- A Bid / Spec bid is won through its project's Award. -->
+            <xpath expr="//header/button[@name='action_twp_bid_won']" position="attributes">
+                <attribute name="invisible" add="twp_bs_is_bid_spec" separator=" or "/>
+            </xpath>
+            <xpath expr="//header/button[@name='action_twp_bid_won']" position="after">
+                <field name="twp_bs_is_bid_spec" invisible="1"/>
+                <button string="Award" name="action_twp_bid_won" type="object" class="btn-primary"
+                        invisible="not twp_bs_is_bid_spec or not twp_is_bid or twp_bid_status != 'open' or not id"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0" role="alert" invisible="not twp_bs_unmatched_lines">
+                    <strong>These lines count toward no job on the project.</strong>
+                    Give their products a Bid / Spec product line, or use a product line's own item:
+                    <field name="twp_bs_unmatched_lines" nolabel="1" readonly="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='twp_bid_status']" position="after">
+                <field name="twp_bs_quoted_as" invisible="not twp_bs_is_bid_spec"/>
+                <field name="twp_bs_source_id" invisible="not twp_bs_is_bid_spec" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

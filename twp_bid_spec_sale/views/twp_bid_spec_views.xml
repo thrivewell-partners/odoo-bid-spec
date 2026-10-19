@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- A bid built in Sales owns its figures: they change on the bid, not here. -->
+    <record id="twp_bs_quote_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.quote.form.sale</field>
+        <field name="model">twp.bid.spec.quote</field>
+        <field name="inherit_id" ref="twp_bid_spec.twp_bs_quote_view_form"/>
+        <field name="arch" type="xml">
+            <field name="quoted_as" position="before">
+                <field name="sale_order_id" invisible="not sale_order_id"/>
+            </field>
+            <field name="model_quoted" position="attributes">
+                <attribute name="readonly">sale_order_id</attribute>
+            </field>
+            <field name="amount" position="attributes">
+                <attribute name="readonly">sale_order_id</attribute>
+            </field>
+            <field name="margin" position="attributes">
+                <attribute name="readonly">sale_order_id</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="twp_bs_quote_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.quote.list.sale</field>
+        <field name="model">twp.bid.spec.quote</field>
+        <field name="inherit_id" ref="twp_bid_spec.twp_bs_quote_view_list"/>
+        <field name="arch" type="xml">
+            <field name="quote_date" position="before">
+                <field name="sale_order_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="twp_bs_job_view_form" model="ir.ui.view">
+        <field name="name">twp.bid.spec.job.form.sale</field>
+        <field name="model">twp.bid.spec.job</field>
+        <field name="inherit_id" ref="twp_bid_spec.twp_bs_job_view_form"/>
+        <field name="arch" type="xml">
+            <field name="installed_partner_id" position="after">
+                <field name="sale_order_id" invisible="not sale_order_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="twp_bs_product_line_view_list" model="ir.ui.view">
+        <field name="name">twp.bid.spec.product.line.list.sale</field>
+        <field name="model">twp.bid.spec.product.line</field>
+        <field name="inherit_id" ref="twp_bid_spec.twp_bs_product_line_view_list"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="product_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>
