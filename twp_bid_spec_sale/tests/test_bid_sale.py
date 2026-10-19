@@ -148,7 +148,9 @@ class TestBidSale(TwpBidSpecCase):
         self.assertTrue(bid.twp_is_bid, "Nothing is won until Award is applied")
 
     def test_bids_off_bid_spec_are_left_alone(self):
-        lead = self.env['crm.lead'].create({'name': 'TWP Plain opportunity', 'type': 'opportunity'})
+        # A team of its own: the default team can be a Bid / Spec pipeline.
+        other = self.env['crm.team'].create({'name': 'TWP Other'})
+        lead = self.env['crm.lead'].create({'name': 'TWP Plain opportunity', 'type': 'opportunity', 'team_id': other.id})
         bid = self._bid(lead, self.contractor_a)
         self.assertFalse(bid.twp_bs_is_bid_spec)
         self.assertFalse(self.env['twp.bid.spec.quote'].search([('sale_order_id', '=', bid.id)]))
