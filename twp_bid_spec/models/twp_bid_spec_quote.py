@@ -43,6 +43,12 @@ class TwpBidSpecQuote(models.Model):
     quote_date = fields.Date("Bid sent", tracking=True)
     last_contact_date = fields.Date("Last contact")
     amount = fields.Monetary("Bid $", tracking=True)
+    document_ids = fields.Many2many(
+        "ir.attachment", "twp_bid_spec_quote_document_rel", "quote_id", "attachment_id", string="Bid PDF",
+        help="The bid document as sent. Files added here are attached to the bid, so they show in its chatter too.")
+    document_missing = fields.Boolean(
+        "Missing bid PDF", compute="_compute_document_missing", store=True,
+        help="Bid sent, with no bid document on file.")
     margin = fields.Float("Margin %", help="As a fraction: 0.24 is 24%.")
     gross_profit = fields.Monetary("Gross profit $", compute="_compute_gross_profit", store=True)
     result_override = fields.Selection([
@@ -62,6 +68,37 @@ class TwpBidSpecQuote(models.Model):
     project_type_id = fields.Many2one(related="job_id.project_type_id", store=True)
     lead_source_id = fields.Many2one(related="job_id.lead_source_id", store=True)
     notes = fields.Text()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        quotes = super().create(vals_list)
+        quotes._twp_bs_attach_documents()
+        return quotes
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "document_ids" in vals:
+            self._twp_bs_attach_documents()
+        return res
+
+    def _twp_bs_attach_documents(self):
+        """Point newly added bid documents at the bid, so they show in its chatter.
+
+        An upload is made before the bid is saved, or on the Log bid dialog, so it belongs to no
+        record yet, or to the dialog. A file already on another record, such as the project, stays
+        where it is.
+        """
+        for quote in self:
+            loose = quote.document_ids.filtered(
+                lambda a: not a.res_model or not a.res_id
+                or (a.res_model in self.env and self.env[a.res_model]._transient))
+            if loose:
+                loose.write({"res_model": quote._name, "res_id": quote.id})
+
+    def _twp_bs_has_document(self):
+        """Whether the bid document is on file. Modules that keep it elsewhere add theirs."""
+        self.ensure_one()
+        return bool(self.document_ids)
 
     def action_open_record(self):
         """Open the full record from a list embedded in its parent, rather than the edit dialog."""
@@ -117,6 +154,11 @@ class TwpBidSpecQuote(models.Model):
             quote.quotes_sent = int(bool(quote.quote_date))
             quote.quotes_decided = int(quote.result in DECIDED_RESULTS)
             quote.quotes_won = int(quote.result == "won")
+
+    @api.depends("quote_date", "document_ids")
+    def _compute_document_missing(self):
+        for quote in self:
+            quote.document_missing = bool(quote.quote_date) and not quote._twp_bs_has_document()
 
     @api.depends("quote_date", "first_contact_date")
     def _compute_reporting_date(self):

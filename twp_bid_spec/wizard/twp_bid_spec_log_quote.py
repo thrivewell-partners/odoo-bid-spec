@@ -1,6 +1,7 @@
 from datetime import timedelta
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
 
 from ..models.twp_bid_spec_quote import QUOTED_AS
 
@@ -27,6 +28,9 @@ class TwpBidSpecLogQuote(models.TransientModel):
     currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
     amount = fields.Monetary("Bid $")
     margin = fields.Float("Margin %")
+    document_ids = fields.Many2many(
+        "ir.attachment", "twp_bid_spec_log_quote_document_rel", "wizard_id", "attachment_id", string="Bid PDF",
+        help="The bid document as sent. It is attached to the contractor bid.")
     next_date = fields.Date("Next follow-up", default=_next_follow_up)
     note = fields.Text()
 
@@ -40,6 +44,8 @@ class TwpBidSpecLogQuote(models.TransientModel):
 
     def action_apply(self):
         self.ensure_one()
+        if self.quoted and not self.document_ids:
+            raise UserError(_("Attach the bid PDF: a bid sent is logged with the document that went out."))
         Job = self.env["twp.bid.spec.job"]
         job = Job.search([("lead_id", "=", self.lead_id.id), ("product_line_id", "=", self.product_line_id.id)])
         if not job:
@@ -54,6 +60,8 @@ class TwpBidSpecLogQuote(models.TransientModel):
             vals.update(quote_date=self.date, amount=self.amount, margin=self.margin)
             if self.model_quoted:
                 vals["model_quoted"] = self.model_quoted
+            # The bid takes the uploads over from this dialog, so they show in its chatter.
+            vals["document_ids"] = [Command.link(document.id) for document in self.document_ids]
         if not quote:
             quote = self.env["twp.bid.spec.quote"].create({
                 "job_id": job.id, "partner_id": self.partner_id.id, "first_contact_date": self.date, **vals})

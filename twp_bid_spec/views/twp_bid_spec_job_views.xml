@@ -43,7 +43,7 @@
                     </group>
                     <separator string="Bids"/>
                     <field name="quote_ids" context="{'default_job_id': id}">
-                        <list editable="bottom">
+                        <list editable="bottom" decoration-warning="document_missing">
                             <field name="partner_id"
                                    context="{'default_is_company': True, 'twp_bs_role_kind': 'contractor'}"/>
                             <field name="source_id" optional="show"/>
@@ -52,6 +52,7 @@
                             <field name="model_quoted" optional="show"/>
                             <field name="first_contact_date" optional="show"/>
                             <field name="quote_date"/>
+                            <field name="document_missing" string="No PDF" optional="show"/>
                             <field name="last_contact_date" optional="hide"/>
                             <field name="currency_id" column_invisible="True"/>
                             <field name="amount"/>

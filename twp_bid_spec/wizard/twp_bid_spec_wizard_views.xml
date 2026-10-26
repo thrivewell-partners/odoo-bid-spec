@@ -54,6 +54,7 @@
                         <field name="model_quoted" invisible="not quoted"/>
                         <field name="amount" invisible="not quoted"/>
                         <field name="margin" widget="percentage" invisible="not quoted"/>
+                        <field name="document_ids" widget="many2many_binary" invisible="not quoted" required="quoted"/>
                     </group>
                 </group>
                 <group>
