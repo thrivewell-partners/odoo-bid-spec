@@ -81,8 +81,6 @@
                         <field name="twp_bs_quotes_sent_count"/>
                         <field name="twp_bs_quotes_decided_count"/>
                         <field name="twp_bs_quotes_won_count"/>
-                        <field name="twp_bs_quotes_missing_document_count" class="text-warning"
-                               invisible="not twp_bs_quotes_missing_document_count"/>
                     </group>
                 </page>
             </xpath>

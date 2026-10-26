@@ -45,12 +45,8 @@ class TestWorkflow(TwpBidSpecCase):
         if quoted:
             form.amount = amount
             form.margin = 0.2
-            form.document_ids.add(self._pdf())
         form.next_date = next_date or self.today + timedelta(days=7)
         form.save().action_apply()
-
-    def _pdf(self, name='Bid.pdf', **vals):
-        return self.env['ir.attachment'].create({'name': name, 'raw': b'%PDF-1.4', **vals})
 
     def test_review_pursue_creates_jobs(self):
         project = self._project()
@@ -98,29 +94,6 @@ class TestWorkflow(TwpBidSpecCase):
         self.assertEqual(quote.last_contact_date, self.today)
         self.assertEqual(quote.activity_ids.date_deadline, self.today + timedelta(days=10))
         self.assertEqual(self._queue(project).date_deadline, self.today + timedelta(days=10))
-
-    def test_log_quote_needs_the_bid_pdf(self):
-        project = self._project()
-        self._pursue(project, [self.infrared])
-        Wizard = self.env['twp.bid.spec.log.quote']
-        vals = {'lead_id': project.id, 'product_line_id': self.infrared.id, 'partner_id': self.contractor_a.id,
-                'amount': 48500}
-        with self.assertRaises(UserError):
-            Wizard.create(vals).action_apply()
-        self.assertFalse(project.twp_bs_quote_ids)
-        # A contact with no bid needs no document.
-        Wizard.create({**vals, 'quoted': False}).action_apply()
-        quote = project.twp_bs_quote_ids
-        self.assertFalse(quote.document_missing)
-        # Uploaded on the dialog, the PDF moves onto the bid, so it is in the bid's chatter too.
-        wizard = Wizard.create(vals)
-        pdf = self._pdf(res_model=Wizard._name, res_id=wizard.id)
-        wizard.document_ids = pdf
-        wizard.action_apply()
-        self.assertEqual(quote.document_ids, pdf)
-        self.assertEqual((pdf.res_model, pdf.res_id), ('twp.bid.spec.quote', quote.id))
-        self.assertFalse(quote.document_missing)
-        self.assertEqual(project.twp_bs_quotes_missing_document_count, 0)
 
     def test_log_quote_creates_missing_job(self):
         project = self._project()

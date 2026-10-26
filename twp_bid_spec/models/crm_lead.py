@@ -42,8 +42,6 @@ class CrmLead(models.Model):
     twp_bs_quotes_sent_count = fields.Integer("Lines bid", compute="_compute_twp_bs_figures", store=True)
     twp_bs_quotes_won_count = fields.Integer("Lines won", compute="_compute_twp_bs_figures", store=True)
     twp_bs_quotes_decided_count = fields.Integer("Lines decided", compute="_compute_twp_bs_figures", store=True)
-    twp_bs_quotes_missing_document_count = fields.Integer(
-        "Bids without a PDF", compute="_compute_twp_bs_figures", store=True)
     twp_bs_days_to_bid = fields.Integer("Days to bid", compute="_compute_twp_bs_days_to_bid")
 
     @api.depends("twp_bs_is_bid_spec", "stage_id.twp_bs_step", "won_status")
@@ -61,8 +59,7 @@ class CrmLead(models.Model):
         for lead in self:
             lead.twp_bs_bid_date_required = (lead.company_id or self.env.company).twp_bs_bid_date_required
 
-    @api.depends("twp_bs_job_ids", "twp_bs_quote_ids.quote_date", "twp_bs_quote_ids.result",
-                 "twp_bs_quote_ids.document_missing")
+    @api.depends("twp_bs_job_ids", "twp_bs_quote_ids.quote_date", "twp_bs_quote_ids.result")
     def _compute_twp_bs_figures(self):
         for lead in self:
             quotes = lead.twp_bs_quote_ids
@@ -71,7 +68,6 @@ class CrmLead(models.Model):
             lead.twp_bs_quote_count = len(quotes)
             lead.twp_bs_quotes_sent_count = len(quotes.filtered("quote_date"))
             lead.twp_bs_quotes_won_count = won
-            lead.twp_bs_quotes_missing_document_count = len(quotes.filtered("document_missing"))
             # An award still waiting on an update, with nothing won yet, decides nothing.
             if not won and any(q.result == "awarded_update" for q in quotes):
                 lead.twp_bs_quotes_decided_count = 0
@@ -87,8 +83,7 @@ class CrmLead(models.Model):
     @api.model
     def _twp_attention_depends(self):
         return super()._twp_attention_depends() + [
-            "twp_bs_bid_date", "twp_bs_status", "twp_bs_quote_count", "twp_bs_quotes_sent_count",
-            "twp_bs_quotes_missing_document_count"]
+            "twp_bs_bid_date", "twp_bs_status", "twp_bs_quote_count", "twp_bs_quotes_sent_count"]
 
     def _twp_attention(self):
         if self.active and self.twp_bs_status == "bidding":
@@ -100,13 +95,7 @@ class CrmLead(models.Model):
                 return _("No contractors contacted")
             if 0 <= self.twp_bs_days_to_bid <= company.twp_bs_warning_days and not self.twp_bs_quotes_sent_count:
                 return _("Bid within %s days - no bid sent", company.twp_bs_warning_days)
-        warning = super()._twp_attention()
-        # Last, after what the stage needs: a bid sent with no bid document on file. It stays on
-        # an awarded project until the PDF is attached.
-        missing = self.twp_bs_quotes_missing_document_count
-        if not warning and missing and self.active and self.twp_bs_status != "cancelled":
-            return _("1 bid without a PDF") if missing == 1 else _("%s bids without a PDF", missing)
-        return warning
+        return super()._twp_attention()
 
     @api.constrains("twp_bs_bid_date", "team_id", "type", "active")
     def _check_twp_bs_bid_date(self):

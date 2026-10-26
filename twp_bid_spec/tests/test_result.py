@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from odoo import Command, fields
+from odoo import fields
 from odoo.tests import tagged
 
 from .common import TwpBidSpecCase
@@ -163,40 +163,6 @@ class TestResult(TwpBidSpecCase):
         self.assertFalse(project.twp_needs_attention, "Five days out is outside a three-day warning")
         self.env.company.twp_bs_warning_days = 7
         quote.quote_date = date(2026, 9, 22)
-        project.invalidate_recordset(['twp_needs_attention'])
-        self.assertEqual(project.twp_needs_attention, '1 bid without a PDF')
-        self._quote(job, self.contractor_b, quote_date=date(2026, 9, 23))
-        project.invalidate_recordset(['twp_needs_attention'])
-        self.assertEqual(project.twp_needs_attention, '2 bids without a PDF')
-        for row in project.twp_bs_quote_ids:
-            row.document_ids = self.env['ir.attachment'].create({'name': 'Bid.pdf', 'raw': b'%PDF-1.4'})
-        project.invalidate_recordset(['twp_needs_attention'])
-        self.assertFalse(project.twp_needs_attention)
-
-    def test_document_missing(self):
-        project = self._project()
-        job = self._job(project)
-        quote = self._quote(job, self.contractor_a, first_contact_date=date(2026, 9, 19))
-        self.assertFalse(quote.document_missing, "Not sent yet, so no document is due")
-        quote.quote_date = date(2026, 9, 22)
-        self.assertTrue(quote.document_missing)
-        self.assertEqual(project.twp_bs_quotes_missing_document_count, 1)
-        self.assertEqual(self.env['twp.bid.spec.quote'].search([('document_missing', '=', True), ('lead_id', '=', project.id)]), quote)
-        # Uploaded on a bid not saved yet, the file belongs to no record: the bid takes it.
-        loose = self.env['ir.attachment'].create({'name': 'Bid.pdf', 'raw': b'%PDF-1.4', 'res_model': quote._name})
-        quote.document_ids = loose
-        self.assertFalse(quote.document_missing)
-        self.assertEqual(project.twp_bs_quotes_missing_document_count, 0)
-        self.assertEqual((loose.res_model, loose.res_id), (quote._name, quote.id))
-        # One already on the project stays there.
-        on_project = self.env['ir.attachment'].create({
-            'name': 'Old bid.pdf', 'raw': b'%PDF-1.4', 'res_model': 'crm.lead', 'res_id': project.id})
-        other = self._quote(job, self.contractor_b, quote_date=date(2026, 9, 22), document_ids=[Command.set(on_project.ids)])
-        self.assertFalse(other.document_missing)
-        self.assertEqual((on_project.res_model, on_project.res_id), ('crm.lead', project.id))
-        # A cancelled project asks for nothing more.
-        other.document_ids = False
-        project.action_set_lost(lost_reason_id=self.cancelled.id)
         project.invalidate_recordset(['twp_needs_attention'])
         self.assertFalse(project.twp_needs_attention)
 

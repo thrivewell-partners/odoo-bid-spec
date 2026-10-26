@@ -6,11 +6,10 @@ For a manufacturer's rep or distributor bidding equipment into specified project
 ticked Bid / Spec, an opportunity is a project: a job for each product line, each contractor's
 bid on each job, and the result of every bid once the project is awarded. Review pursues or
 passes a project, Log bid and Log a touch book the follow-ups, Award names the winner and whose
-equipment went in. A bid sent is logged with its PDF, which is attached to the bid; a sent bid with
-none is flagged on the bid lists and on the project card. A follow-up queue, a dashboard for any
-window, and contractor and engineer scorecards. Off until it is turned on in Settings > CRM > Bid / Spec.
+equipment went in. A follow-up queue, a dashboard for any window, and contractor and engineer
+scorecards. Off until it is turned on in Settings > CRM > Bid / Spec.
 """,
-    "version": "19.0.1.2.0",
+    "version": "19.0.1.1.0",
     "category": "Sales/CRM",
     "license": "LGPL-3",
     "author": "ThriveWell Partners",

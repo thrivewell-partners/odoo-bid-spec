@@ -127,18 +127,6 @@ class TestBidSale(TwpBidSpecCase):
         self.assertEqual(row.activity_ids.date_deadline, self.today + timedelta(days=5))
         self.assertIn(bid.name, row.message_ids[0].body)
 
-    def test_a_bid_built_in_sales_is_its_own_document(self):
-        project = self._jobs(self._project(), [self.infrared])
-        bid = self._bid(project, self.contractor_a)
-        bid.action_quotation_sent()
-        logged = self._log(project, self.contractor_b, 48500)
-        row = project.twp_bs_quote_ids - logged
-        self.assertFalse(row.document_missing, "The bid in Sales is the document")
-        self.assertTrue(logged.document_missing, "A bid logged by hand still needs its PDF")
-        self.assertEqual(project.twp_bs_quotes_missing_document_count, 1)
-        row.sale_order_id = False
-        self.assertTrue(row.document_missing)
-
     def test_copy_to_contractors_fills_a_bid_each(self):
         project = self._jobs(self._project(), [self.infrared])
         bid = self._bid(project, self.contractor_a)
