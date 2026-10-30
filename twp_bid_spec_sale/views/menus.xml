@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bids built in Sales sit with the rest of Bid / Spec under CRM > Bids, not beside Quotations. -->
+<odoo>
+    <record id="twp_bids.menu_bids" model="ir.ui.menu">
+        <field name="name">Bid documents</field>
+        <field name="parent_id" ref="twp_bid_spec.menu_bids"/>
+        <field name="sequence">3</field>
+    </record>
+</odoo>

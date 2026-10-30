@@ -160,6 +160,12 @@ class TestBidSale(TwpBidSpecCase):
 
     # Award
 
+    def test_bids_belong_to_bid_spec(self):
+        menu = self.env.ref('twp_bids.menu_bids')
+        self.assertEqual(menu.parent_id, self.env.ref('twp_bid_spec.menu_bids'), "Bids sit under CRM > Bids")
+        arch = self.env['crm.lead'].get_views([(False, 'form')])['views']['form']['arch']
+        self.assertRegex(arch, r'name="action_twp_new_bid"[^>]*invisible="[^"]*not twp_bs_is_bid_spec')
+
     def test_award_turns_the_winning_bid_into_the_quotation(self):
         project = self._jobs(self._project(), [self.infrared])
         bid_a = self._bid(project, self.contractor_a)
