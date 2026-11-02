@@ -153,17 +153,17 @@ class TestBidSale(TwpBidSpecCase):
         self.assertFalse(self._log(project, self.contractor_b, 500.0).sale_order_is_bid, "A bid logged by hand has no document")
 
     def test_duplicate_bid_on_the_project_fills_its_jobs(self):
-        earlier = self._jobs(self._project(), [self.infrared])
-        bid = self._bid(earlier, self.contractor_a)
         project = self._jobs(self._project(), [self.infrared])
+        bid = self._bid(project, self.contractor_a)
         action = project.action_twp_duplicate_bid()
+        self.assertEqual(action['context']['default_bid_id'], bid.id)
         wizard = Form(self.env['twp.bid.copy'].with_context(action['context']))
-        wizard.bid_id = bid
         wizard.partner_ids.add(self.contractor_b)
         wizard.save().action_apply()
-        row = project.twp_bs_quote_ids
-        self.assertEqual((row.partner_id, row.sale_order_id.twp_bid_source_id), (self.contractor_b, bid))
-        self.assertEqual(earlier.twp_bs_quote_ids.partner_id, self.contractor_a, "The earlier project keeps only its own bid")
+        rows = {row.partner_id: row for row in project.twp_bs_quote_ids}
+        self.assertEqual(set(rows), {self.contractor_a, self.contractor_b})
+        self.assertEqual(rows[self.contractor_b].sale_order_id.twp_bid_source_id, bid)
+        self.assertEqual(rows[self.contractor_a].sale_order_id, bid, "The original keeps its own row")
 
     def test_won_on_a_bid_opens_award(self):
         project = self._jobs(self._project(), [self.infrared])
