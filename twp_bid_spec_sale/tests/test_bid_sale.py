@@ -138,6 +138,20 @@ class TestBidSale(TwpBidSpecCase):
         self.assertNotEqual(rows[self.contractor_b].sale_order_id, bid)
         self.assertEqual(rows[self.contractor_b].amount, rows[self.contractor_a].amount)
 
+    def test_duplicate_from_the_contractor_bid(self):
+        project = self._jobs(self._project(), [self.infrared])
+        bid = self._bid(project, self.contractor_a)
+        row = project.twp_bs_quote_ids
+        self.assertTrue(row.sale_order_is_bid)
+        action = row.action_twp_bs_duplicate()
+        self.assertEqual((action['res_model'], action['context']['default_bid_id']), ('twp.bid.copy', bid.id))
+        wizard = Form(self.env['twp.bid.copy'].with_context(action['context']))
+        wizard.partner_ids.add(self.contractor_b)
+        wizard.save().action_apply()
+        rows = {row.partner_id: row for row in project.twp_bs_quote_ids}
+        self.assertEqual(rows[self.contractor_b].sale_order_id.twp_bid_source_id, bid)
+        self.assertFalse(self._log(project, self.contractor_b, 500.0).sale_order_is_bid, "A bid logged by hand has no document")
+
     def test_won_on_a_bid_opens_award(self):
         project = self._jobs(self._project(), [self.infrared])
         bid = self._bid(project, self.contractor_a)

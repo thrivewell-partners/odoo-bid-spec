@@ -15,7 +15,7 @@ The amount read from a bid is what its total counts, so alternatives and add-ons
 out of it. Each product line has a Sales product of its own, so a bid can be built before the
 catalog is loaded, and catalog products can name the product line they belong to.
 """,
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.2.0",
     "category": "Sales/CRM",
     "license": "LGPL-3",
     "author": "ThriveWell Partners",

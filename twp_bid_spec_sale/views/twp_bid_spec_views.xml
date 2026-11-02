@@ -6,6 +6,12 @@
         <field name="model">twp.bid.spec.quote</field>
         <field name="inherit_id" ref="twp_bid_spec.twp_bs_quote_view_form"/>
         <field name="arch" type="xml">
+            <!-- The bid document is duplicated from its contractor bid as well as from Sales. -->
+            <xpath expr="//header/button[@name='action_twp_bs_log_touch']" position="after">
+                <field name="sale_order_is_bid" invisible="1"/>
+                <button name="action_twp_bs_duplicate" string="Duplicate for Contractor" type="object"
+                        invisible="not sale_order_is_bid"/>
+            </xpath>
             <field name="quoted_as" position="before">
                 <field name="sale_order_id" invisible="not sale_order_id"/>
             </field>
