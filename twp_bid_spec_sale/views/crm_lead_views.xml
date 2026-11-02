@@ -2,7 +2,7 @@
 <odoo>
     <!-- Bids belong to Bid / Spec. A Bid / Spec card's quotation comes from Award, and its Bids
          button lists the contractor bids, one row per contractor and job, so Sales' New Quotation
-         and Bids buttons step aside; New Bid stays, as it is how a bid is built in Sales. Any other
+         and Bids buttons step aside; New Bid and Duplicate Bid stay, as they are how a bid is built in Sales. Any other
          card is ordinary sales: New Quotation, and no New Bid or Bids. -->
     <record id="crm_lead_view_form" model="ir.ui.view">
         <field name="name">crm.lead.form.twp.bid.spec.sale</field>
@@ -13,6 +13,9 @@
                 <attribute name="invisible" add="twp_bs_is_bid_spec" separator=" or "/>
             </xpath>
             <xpath expr="//button[@name='action_twp_new_bid']" position="attributes">
+                <attribute name="invisible" add="not twp_bs_is_bid_spec" separator=" or "/>
+            </xpath>
+            <xpath expr="//button[@name='action_twp_duplicate_bid']" position="attributes">
                 <attribute name="invisible" add="not twp_bs_is_bid_spec" separator=" or "/>
             </xpath>
             <xpath expr="//button[@name='action_twp_view_bids']" position="attributes">
