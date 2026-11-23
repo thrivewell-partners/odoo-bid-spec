@@ -13,9 +13,12 @@ Bids as Bid documents, and every other opportunity keeps Sales' own New Quotatio
 
 The amount read from a bid is what its total counts, so alternatives and add-ons not chosen stay
 out of it. Each product line has a Sales product of its own, so a bid can be built before the
-catalog is loaded, and catalog products can name the product line they belong to.
+catalog is loaded, and catalog products can name the product line they belong to. A product that names none, such as an
+accessory, follows the product line of its bundle when the bundle's products name just one; in a
+bundle of two lines, in a bundle naming none, or outside any bundle, it counts toward no job and the
+bid lists it as unmatched.
 """,
-    "version": "19.0.1.3.0",
+    "version": "19.0.1.4.0",
     "category": "Sales/CRM",
     "license": "LGPL-3",
     "author": "ThriveWell Partners",

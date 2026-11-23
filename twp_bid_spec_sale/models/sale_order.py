@@ -18,7 +18,8 @@ class SaleOrder(models.Model):
         compute="_compute_twp_bs_unmatched_lines",
         help="Lines that count toward no job, because neither their product nor the project says which.")
 
-    @api.depends("order_line.product_id", "order_line.display_type", "opportunity_id.twp_bs_job_ids", "twp_is_bid")
+    @api.depends("order_line.product_id", "order_line.display_type", "order_line.sequence", "order_line.twp_is_bundle",
+                 "opportunity_id.twp_bs_job_ids", "twp_is_bid")
     def _compute_twp_bs_unmatched_lines(self):
         for order in self:
             unmatched = order._twp_bs_lines_by_product_line()[1] if order.twp_is_bid and order.twp_bs_is_bid_spec else []
@@ -27,17 +28,30 @@ class SaleOrder(models.Model):
 
     def _twp_bs_lines_by_product_line(self):
         """({product line: lines}, lines matched to none). A line counts toward its product's
-        product line, else toward the project's only job. Lines kept out of the total, such as an
-        alternative not chosen, count toward nothing."""
+        product line; else toward its bundle's, when the products in the bundle that name one all
+        name the same; else toward the project's only job. Lines kept out of the total, such as an
+        alternative not chosen, count toward nothing.
+
+        So an accessory sold in a heater's bundle goes with the heater. A bundle with no product
+        that names a line, or with products of two lines, gives its other lines none: which job a
+        shared part serves is not for the sync to guess, and the bid lists them as unmatched."""
         self.ensure_one()
+        ProductLine = self.env["twp.bid.spec.product.line"]
         jobs = self.opportunity_id.twp_bs_job_ids
-        only = jobs.product_line_id if len(jobs) == 1 else self.env["twp.bid.spec.product.line"]
+        only = jobs.product_line_id if len(jobs) == 1 else ProductLine
         self.order_line._twp_refresh_parents()
+        counted = self.order_line.sorted("sequence").filtered(
+            lambda line: not (line.display_type or line._twp_is_special() or line._twp_is_excluded()))
+        own = {line: line.product_id.product_tmpl_id.twp_bs_product_line_id for line in counted}
+        bundle = {line: line._twp_bundle() for line in counted}
+        named = {}  # {bundle: the product lines its own products name}
+        for line in counted:
+            if bundle[line] and own[line]:
+                named[bundle[line]] = named.get(bundle[line], ProductLine) | own[line]
         groups, unmatched = {}, self.env["sale.order.line"]
-        for line in self.order_line.sorted("sequence"):
-            if line.display_type or line._twp_is_special() or line._twp_is_excluded():
-                continue
-            product_line = line.product_id.product_tmpl_id.twp_bs_product_line_id or only
+        for line in counted:
+            from_bundle = named.get(bundle[line], ProductLine) if bundle[line] else ProductLine
+            product_line = own[line] or (from_bundle if len(from_bundle) == 1 else ProductLine) or only
             if product_line:
                 groups[product_line] = groups.get(product_line, self.env["sale.order.line"]) | line
             else:
@@ -45,8 +59,9 @@ class SaleOrder(models.Model):
         return groups, unmatched
 
     def _twp_bs_model_quoted(self, lines):
-        """What the bid offers on a job, from its first line: the product, or what the rep typed."""
-        line = lines[:1]
+        """What the bid offers on a job, from its first line whose product names the job's product
+        line (an accessory carried with it is not the model): the product, or what the rep typed."""
+        line = lines.filtered(lambda l: l.product_id.product_tmpl_id.twp_bs_product_line_id)[:1] or lines[:1]
         generic = line.product_id.product_tmpl_id.twp_bs_product_line_id.product_id
         if line.product_id and line.product_id != generic:
             return line.product_id.display_name
