@@ -102,6 +102,77 @@ class TestBidSale(TwpBidSpecCase):
         self.assertIn('TWP Freight', bid.twp_bs_unmatched_lines)
         self.assertAlmostEqual(project.twp_bs_quote_ids.amount, 4967.82, msg="Freight counts toward no job")
 
+    def _part(self, name, qty, price, product_line=None):
+        """A catalog product, such as an accessory, that names no product line unless given one."""
+        product = self.env['product.product'].create({
+            'name': name, 'type': 'consu',
+            'twp_bs_product_line_id': product_line.id if product_line else False})
+        return Command.create({'product_id': product.id, 'name': name, 'product_uom_qty': qty, 'price_unit': price})
+
+    def _section(self, name, bundle=False):
+        return Command.create({'display_type': 'line_section', 'name': name, 'twp_is_bundle': bundle})
+
+    def test_accessory_in_a_bundle_follows_its_heater(self):
+        # As on the West Lafayette bids: one thermostat and freight sold under both heaters.
+        project = self._jobs(self._project(), [self.infrared, self.hvls])
+        Product = self.env['product.product']
+        stat = Product.create({'name': 'TWP TH-BR12 thermostat', 'type': 'consu'})
+        freight = Product.create({'name': 'TWP Freight', 'type': 'service'})
+
+        def shared(product, price):
+            return Command.create({'product_id': product.id, 'product_uom_qty': 1, 'price_unit': price})
+        bid = self._bid(project, self.contractor_a, [
+            self._section('Tube heater package', bundle=True),
+            self._part('TWP BK bracket kit', 1, 120.0),
+            self._line(self.infrared, 'HL3-30-125N', 1, 1655.94, 1000.0),
+            shared(stat, 80.0),
+            shared(freight, 1100.0),
+            self._section('Fan package', bundle=True),
+            self._line(self.hvls, 'HVLS 16 ft', 1, 6000.0, 4000.0),
+            shared(stat, 50.0),
+            shared(freight, 75.0),
+        ])
+        amounts = {row.job_id.product_line_id: row.amount for row in project.twp_bs_quote_ids}
+        self.assertEqual(amounts, {self.infrared: 2955.94, self.hvls: 6125.0})
+        self.assertAlmostEqual(sum(amounts.values()), bid.amount_untaxed)
+        self.assertFalse(bid.twp_bs_unmatched_lines)
+        row = project.twp_bs_quote_ids.filtered(lambda r: r.job_id.product_line_id == self.infrared)
+        self.assertEqual(row.model_quoted, 'HL3-30-125N', "The heater is the model, not the bracket listed first")
+
+    def test_a_tagged_product_keeps_its_own_line_in_a_bundle(self):
+        project = self._jobs(self._project(), [self.infrared, self.hvls])
+        bid = self._bid(project, self.contractor_a, [
+            self._section('Mixed package', bundle=True),
+            self._line(self.infrared, 'HL3-30-125N', 1, 1655.94, 1000.0),
+            self._part('TWP Hunter fan', 1, 6000.0, self.hvls),
+            self._part('TWP Freight', 1, 375.0),
+        ])
+        amounts = {row.job_id.product_line_id: row.amount for row in project.twp_bs_quote_ids}
+        self.assertEqual(amounts, {self.infrared: 1655.94, self.hvls: 6000.0}, "Each tagged product counts toward its own line")
+        self.assertEqual(bid.twp_bs_unmatched_lines, '- TWP Freight', "A bundle of two lines leaves its other lines unmatched")
+
+    def test_a_bundle_with_no_matched_product_stays_unmatched(self):
+        project = self._jobs(self._project(), [self.infrared, self.hvls])
+        bid = self._bid(project, self.contractor_a, [
+            self._line(self.infrared, 'HL3-30-125N', 1, 1655.94, 1000.0),
+            self._section('Accessory package', bundle=True),
+            self._part('TWP BK bracket kit', 1, 120.0),
+            self._part('TWP TH-BR12 thermostat', 1, 80.0),
+        ])
+        self.assertAlmostEqual(project.twp_bs_quote_ids.amount, 1655.94)
+        self.assertEqual(bid.twp_bs_unmatched_lines, '- TWP BK bracket kit\n- TWP TH-BR12 thermostat')
+
+    def test_lines_outside_a_bundle_are_unchanged(self):
+        project = self._jobs(self._project(), [self.infrared, self.hvls])
+        bid = self._bid(project, self.contractor_a, [
+            self._part('TWP Freight', 1, 375.0),
+            self._section('Heaters'),
+            self._line(self.infrared, 'HL3-30-125N', 1, 1655.94, 1000.0),
+            self._part('TWP BK bracket kit', 1, 120.0),
+        ])
+        self.assertAlmostEqual(project.twp_bs_quote_ids.amount, 1655.94, msg="A plain section is not a bundle")
+        self.assertEqual(bid.twp_bs_unmatched_lines, '- TWP Freight\n- TWP BK bracket kit')
+
     def test_alternatives_not_chosen_stay_out_of_the_bid(self):
         project = self._jobs(self._project(), [self.infrared])
         bid = self._bid(project, self.contractor_a, [
